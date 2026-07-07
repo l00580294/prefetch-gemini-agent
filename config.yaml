@@ -1,0 +1,23 @@
+search_queries:
+  - 'abs: "prefetcher" OR abs: "prefetching"'
+  - 'title: "prefetch" OR title: "prefetching"'
+
+filter_rules:
+  include:
+    - "hardware prefetch"
+    - "cache prefetching"
+    - "spatial prefetching"
+    - "temporal prefetching"
+    - "instruction prefetch"
+    - "data prefetch"
+    - "pointer chasing"
+    - "stride prefetch"
+    - "memory subsystem"
+  exclude:
+    - "5G"
+    - "cellular"
+    - "wireless"
+    - "web page"
+    - "html"
+    - "http"
+    - "cdn"
