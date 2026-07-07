@@ -1,5 +1,6 @@
 import os
 import urllib.request
+import urllib.parse  # 导入用于处理 URL 编码的库
 import xml.etree.ElementTree as ET
 import yaml
 from google import genai
@@ -10,12 +11,22 @@ with open('config.yaml', 'r', encoding='utf-8') as f:
 
 # 2. 从 arXiv 检索最新的预取论文
 print("🚀 正在从 arXiv 实时抓取最新的预取领域文献...")
-query = config['search_queries'][0].replace(" ", "+")
-url = f'http://export.arxiv.org/api/query?search_query={query}&max_results=20&sortBy=submittedDate&sortOrder=descending'
 
-response = urllib.request.urlopen(url)
-xml_data = response.read()
-root = ET.fromstring(xml_data)
+# 【修复核心】：使用 urllib.parse.quote 对含双引号和逻辑词的 query 进行安全编码
+raw_query = config['search_queries'][0]
+encoded_query = urllib.parse.quote(raw_query)
+
+# 拼接成标准的 API 请求链接
+url = f'http://export.arxiv.org/api/query?search_query={encoded_query}&max_results=20&sortBy=submittedDate&sortOrder=descending'
+print(f"🔗 正在请求的 API 链接: {url}")
+
+try:
+    response = urllib.request.urlopen(url)
+    xml_data = response.read()
+    root = ET.fromstring(xml_data)
+except Exception as e:
+    print(f"❌ 请求 arXiv API 失败: {e}")
+    exit(1)
 
 papers = []
 for entry in root.findall('{http://www.w3.org/2005/Atom}entry'):
@@ -33,7 +44,7 @@ for p in papers:
     if has_include and not has_exclude:
         filtered_papers.append(p)
 
-print(f"💡 本次检索共捕获到 {len(papers)} 篇包含预取字眼的论文。")
+print(f"💡 本次检索共捕获到 {len(papers)} 篇包含预取字眼的原始论文。")
 print(f"🎯 经过硬件子系统、缓存预取规则严格清洗后，剩余 {len(filtered_papers)} 篇核心架构论文。\n")
 
 # 4. 接入官方免费的 Gemini 进行硬核结构化总结
@@ -63,4 +74,4 @@ if filtered_papers and api_key:
         except Exception as e:
             print(f"调用 Gemini 失败: {e}")
 else:
-    print("没有发现符合硬件预取标准的论文，或者未在GitHub配置Gemini密钥。")
+    print("今日没有发现符合硬件预取标准的最新论文，或者未在 GitHub 配置 LLM_API_KEY。")
