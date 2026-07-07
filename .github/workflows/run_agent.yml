@@ -1,0 +1,30 @@
+name: Gemini Prefetch Paper Agent Workflow
+
+on:
+  schedule:
+    # 每天北京时间早上 08:30 自动运行 (对应 UTC 时间 00:30)
+    - cron: '30 0 * * *'
+  workflow_dispatch: # 允许我们在网页上点击手动测试
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 检查出库代码
+      uses: actions/checkout@v4
+
+    - name: 安装 Python 环境
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: 安装运行依赖
+      run: |
+        pip install pyyaml google-genai
+
+    - name: 启动 Gemini 论文追踪 Agent
+      env:
+        # 将你在安全保险箱里的 Gemini 密钥拿出来使用
+        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      run: |
+        python main.py
