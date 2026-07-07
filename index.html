@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>处理器预取算法文献追踪大屏</title>
+    <style>
+        :root { --bg: #f8fafc; --text: #1e293b; --primary: #2563eb; --card-bg: #ffffff; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
+        .header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.05em; }
+        .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 1rem; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+        .card { background: var(--card-bg); border-radius: 16px; padding: 28px; margin-bottom: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+        .card-tag { display: inline-block; background: #dbeafe; color: #1e40af; font-weight: 700; padding: 4px 12px; border-radius: 9999px; font-size: 0.85rem; margin-bottom: 12px; }
+        .card-title { font-size: 1.4rem; margin: 0 0 15px 0; font-weight: 700; color: #0f172a; line-height: 1.3; }
+        .card-meta { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; display: flex; gap: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
+        .card-meta a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .card-meta a:hover { text-decoration: underline; }
+        .card-analysis { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px 20px; border-radius: 0 12px 12px 0; }
+        .card-analysis h3 { margin: 0 0 8px 0; font-size: 1.05rem; color: #166534; font-weight: 700; }
+        .card-analysis p { margin: 0; color: #14532d; font-size: 1rem; }
+        footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🚀 处理器预取算法文献追踪面板</h1>
+        <p>基于开源规则引擎与 Google Gemini 2.5 Flash 强力驱动</p>
+        <p style="font-size: 0.85rem; margin-top: 15px; opacity: 0.7;">🔄 智能生成时间：2026-07-07 11:22:37 (北京时间)</p>
+    </div>
+    <div class="container">
+        
+        <div class="card">
+            <div class="card-tag">论文 1</div>
+            <h2 class="card-title">TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout</h2>
+            <div class="card-meta">
+                <span>📅 发表时间: <strong>2026-07-04</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2607.04031v1" target="_blank">查看 arXiv 原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>💡 Gemini 专家解读：</h3>
+                <p>针对LLM推理中新型大粒度存储（如HBF）因一维内存布局与二维计算瓦片不匹配导致的“读放大”性能瓶颈，TileLens的核心创新在于提出并透明地实现了“tile-major”二维内存布局，将内存块重塑为二维矩形以精确匹配计算瓦片，从而消除数据冗余。<br><br>实验表明，在结合自适应硬件预取器后，TileLens能将传统布局下1.61-6.49倍的性能下降显著降低，使HBF增强型GPU的性能达到接近纯HBM的水平，仅比HBM基线慢不到1%。</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-tag">论文 2</div>
+            <h2 class="card-title">Toward Intelligent Prefetching: A Survey on Complex Memory Access Prediction Techniques</h2>
+            <div class="card-meta">
+                <span>📅 发表时间: <strong>2026-06-08</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2606.09955v1" target="_blank">查看 arXiv 原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>💡 Gemini 专家解读：</h3>
+                <p>**核心创新点：** 本综述的核心创新在于提出了一个多维度、结构化的分类体系，系统地组织和理解了包括机器学习在内的各类复杂内存访问预取技术。<br><br>**实验效果：** 通过对现有机器学习预取器进行多维度对比分析，该研究揭示了准确性与开销的帕累托前沿、模型复杂性与缓存层级的自然映射关系，并为解决运行时适应性与模型容量的内在矛盾提出了分层集成架构的未来方向。</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-tag">论文 3</div>
+            <h2 class="card-title">Orion: Enabling Self-adaptive Memory Management for On-device Online Continual Learning</h2>
+            <div class="card-meta">
+                <span>📅 发表时间: <strong>2026-05-26</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2605.26473v1" target="_blank">查看 arXiv 原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>💡 Gemini 专家解读：</h3>
+                <p>Orion的核心创新在于引入了一个自适应内存管理框架，它通过统一运行时指标（URGE）动态分配内存，并结合系统级数据预取，使持续学习模型在资源受限设备上实现高效运作。<br>实验结果显示，Orion在保证学习性能均衡的前提下，显著提升了训练速度，有效适应了多种复杂场景，且自身引入的运行、内存和能耗开销极低。</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-tag">论文 4</div>
+            <h2 class="card-title">TTP: A Hardware-Efficient Design for Precise Prefetching in Ray Tracing</h2>
+            <div class="card-meta">
+                <span>📅 发表时间: <strong>2026-05-15</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2605.16253v1" target="_blank">查看 arXiv 原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>💡 Gemini 专家解读：</h3>
+                <p>这项硬件预取算法（TTP）的核心创新在于巧妙地利用光线追踪硬件中已有的树遍历栈，在树节点向上遍历（即出栈）时，基于栈上的地址生成精确的预取请求，从而缓解了边界体积层次结构（BVH）遍历中的内存访问瓶颈。实验结果显示，TTP在周期级模拟器上实现了平均1.48倍（最高1.89倍）的性能提升，且硬件开销几乎可以忽略不计，同时保持了98.92%的L1预取准确率和31.54%的L1缓存缺失覆盖率。</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-tag">论文 5</div>
+            <h2 class="card-title">ICP: Exploiting Instruction Correlation for Prefetching Irregular Memory Accesses</h2>
+            <div class="card-meta">
+                <span>📅 发表时间: <strong>2026-05-15</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2605.15645v1" target="_blank">查看 arXiv 原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>💡 Gemini 专家解读：</h3>
+                <p>**核心创新点：** ICP算法的核心创新在于，即使内存访问地址本身不规则且不重复，它也能通过分析生成这些地址的指令之间稳定的执行关联和数据依赖关系，从而预测并预取未来的不规则内存访问。<br><br>**实验效果：** 实验结果显示，ICP在处理不规则内存访问时，相比现有最先进的预取器（如Triangel）性能提升14.0%，同时仅需2.1 KB的极小硬件存储，比传统预取器少三个数量级以上。</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-tag">论文 6</div>
+            <h2 class="card-title">Enhancing Instruction Prefetching via Cache and TLB Management</h2>
+            <div class="card-meta">
+                <span>📅 发表时间: <strong>2026-05-12</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2605.12433v1" target="_blank">查看 arXiv 原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>💡 Gemini 专家解读：</h3>
+                <p>这项研究提出IP-CaT框架，其核心创新是通过协同管理内存地址翻译和数据缓存，专门解决指令预取在跨页时翻译延迟高以及预取代码在缓存中利用率低的问题。<br><br>实验证明，IP-CaT能在105个服务器工作负载下持续提升性能，例如与EPI预取器结合时可带来8.7%的几何平均加速，并且优于现有先进的地址翻译和缓存替换策略。</p>
+            </div>
+        </div>
+        
+    </div>
+    <footer>
+        <p>© 2026 Prefetch Paper Agent | 借鉴世界一流学术追踪标准构建</p>
+    </footer>
+</body>
+</html>
