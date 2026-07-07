@@ -2,9 +2,8 @@ name: Gemini Prefetch Paper Agent Workflow
 
 on:
   schedule:
-    # 每天北京时间早上 08:30 自动运行 (对应 UTC 时间 00:30)
-    - cron: '30 0 * * *'
-  workflow_dispatch: # 允许我们在网页上点击手动测试
+    - cron: '30 0 * * *'  # 每天早上北京时间 08:30 自动起床运行
+  workflow_dispatch:      # 支持手动点击按钮测试
 
 jobs:
   build:
@@ -22,9 +21,18 @@ jobs:
       run: |
         pip install pyyaml google-genai
 
-    - name: 启动 Gemini 论文追踪 Agent
+    - name: 启动 Gemini 论文追踪并生成网页
       env:
-        # 将你在安全保险箱里的 Gemini 密钥拿出来使用
         LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
       run: |
         python main.py
+
+    # 【新增进化步骤】：自动将新生成的 index.html 推送回 GitHub 仓库
+    - name: 自动提交网页并部署
+      run: |
+        git config --local user.email "actions@github.com"
+        git config --local user.name "GitHub Actions"
+        git add index.html
+        # 如果网页有更新，就推送到仓库；没有更新就忽略报错
+        git diff --quiet && git diff --staged --quiet || git commit -m "🔄 自动同步最新论文网页 [$(date '+%Y-%m-%d %H:%M:%S')]"
+        git push origin main
