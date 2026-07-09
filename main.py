@@ -6,91 +6,75 @@ import xml.etree.ElementTree as ET
 import yaml
 import time
 from datetime import datetime
-# 引入时间差计算库
-from datetime import timedelta
 
 # ==========================================
-# 【网络请求工具：带指数退避的健壮网络请求】
+# 【工业级请求：带硬超时的底层网络连接器】
 # ==========================================
 def robust_http_request(url, headers=None, data=None, max_retries=3):
     if headers is None:
         headers = {'User-Agent': 'Mozilla/5.0'}
-    req = urllib.request.Request(url, headers=headers, data=data)
     
     for attempt in range(max_retries):
         try:
-            with urllib.request.urlopen(req, timeout=15) as response:
-                return response.read()
+            req = urllib.request.Request(url, headers=headers, data=data)
+            # 严格限制连接超时 10 秒，防止被第三方平台恶意挂起（Hang住）
+            with urllib.request.urlopen(req, timeout=10) as response:
+                content = response.read(1024 * 1024 * 3) # 最大3MB限制
+                if content:
+                    return content
         except Exception as e:
             if attempt == max_retries - 1:
-                print(f"❌ 网络请求彻底失败 (已尝试 {max_retries} 次): {url}, 错误: {e}")
+                print(f"❌ 网络请求彻底失败 (已尝试 {max_retries} 次): 错误: {e}")
                 return None
             sleep_time = 2 ** attempt
-            print(f"⚠️ 网络请求遭遇波动，将在 {sleep_time} 秒后进行第 {attempt + 2} 次重试...")
             time.sleep(sleep_time)
     return None
 
 # ==========================================
-# 【大模型驱动：自动双通道智能降级请求引擎】
+# 【核心升级：直连 Google 官方原生 AI Studio 引擎】
 # ==========================================
-def ask_llm_with_fallback(prompt, api_key):
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://github.com/l00580294/prefetch-gemini-agent", 
-        "X-Title": "Prefetch Academic Agent"
-    }
+def ask_gemini_native(prompt, api_key):
+    # 使用 Google 官方原生底层 REST API 端口（gemini-2.5-flash 官方标准终点）
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    headers = {"Content-Type": "application/json"}
     
-    models_pool = [
-        "google/gemini-2.5-flash",                  
-        "meta-llama/llama-3.3-70b-instruct:free",    
-        "deepseek/deepseek-chat:free"                
-    ]
-    
-    for model_name in models_pool:
-        print(f"🤖 正在尝试调用模型: [{model_name}] ...")
-        payload = {
-            "model": model_name,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.2
+    payload = {
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }],
+        "generationConfig": {
+            "temperature": 0.1,
+            "maxOutputTokens": 300
         }
-        data = json.dumps(payload).encode('utf-8')
-        
-        res_bytes = robust_http_request(url, headers=headers, data=data)
-        if res_bytes:
-            try:
-                res_json = json.loads(res_bytes.decode('utf-8'))
-                if 'error' in res_json:
-                    print(f"⚠️ 模型 {model_name} 高峰拒绝: {res_json['error'].get('message', '503 Error')}")
-                    continue
-                content = res_json['choices'][0]['message']['content'].strip()
-                print(f"✅ 模型 [{model_name}] 响应成功！")
-                return content
-            except Exception as e:
-                print(f"⚠️ 解析模型 {model_name} 失败: {e}")
-        else:
-            print(f"⚠️ 模型 {model_name} 未返回有效数据。")
-            
+    }
+    data = json.dumps(payload).encode('utf-8')
+    
+    res_bytes = robust_http_request(url, headers=headers, data=data)
+    if res_bytes:
+        try:
+            res_json = json.loads(res_bytes.decode('utf-8'))
+            # 解析 Google 官方标准的 JSON 响应树
+            content = res_json['candidates'][0]['content']['parts'][0]['text'].strip()
+            return content
+        except Exception as e:
+            print(f"⚠️ 官方原生通道响应解析失败: {e}")
     return None
 
 # ==========================================
 # 主运行核心逻辑
 # ==========================================
 def main():
-    # 1. 加载本地过滤配置文件
     with open('config.yaml', 'r', encoding='utf-8') as f:
         config = yaml.safe_load(f)
 
-    # 读取配置的时间窗口（默认6个月）
     config_months = config.get('time_window', {}).get('months', 6)
-    print(f"📅 已启用时间窗口裁剪器：仅检索过去 {config_months} 个月内发表的新论文。")
+    print(f"📅 时间窗口裁剪器：仅检索过去 {config_months} 个月内发表的新论文。")
 
-    # 2. 从 arXiv 检索最新的预取论文 (放大池子到 100 篇，确保时间跨度覆盖完整)
+    # 缩小初筛池至 50 篇，既减轻 arXiv 压力，又能完美覆盖近半年的核心论文
     print("🚀 正在从 arXiv 实时海选原始文献...")
     raw_query = config['search_queries'][0]
     encoded_query = urllib.parse.quote(raw_query)
-    arxiv_url = f'http://export.arxiv.org/api/query?search_query={encoded_query}&max_results=100&sortBy=submittedDate&sortOrder=descending'
+    arxiv_url = f'http://export.arxiv.org/api/query?search_query={encoded_query}&max_results=50&sortBy=submittedDate&sortOrder=descending'
 
     xml_data = robust_http_request(arxiv_url)
     if not xml_data:
@@ -99,41 +83,30 @@ def main():
         
     root = ET.fromstring(xml_data)
     raw_papers = []
-    
-    # 获取当前时间，用于计算时间差
     current_now = datetime.now()
-    # 粗略计算截止日期：1个月约按30.5天计算
     cutoff_days = int(config_months * 30.5)
-    
     time_filtered_count = 0
 
     for entry in root.findall('{http://www.w3.org/2005/Atom}entry'):
         title = entry.find('{http://www.w3.org/2005/Atom}title').text.strip().replace('\n', ' ')
         summary = entry.find('{http://www.w3.org/2005/Atom}summary').text.strip().replace('\n', ' ')
         paper_url = entry.find('{http://www.w3.org/2005/Atom}id').text
-        
         published_raw = entry.find('{http://www.w3.org/2005/Atom}published').text
         
-        # --- 【核心新增：动态时间窗口裁剪算法】 ---
         try:
             dt = datetime.strptime(published_raw, "%Y-%m-%dT%H:%M:%SZ")
             published_date = dt.strftime("%Y-%m-%d")
-            
-            # 计算论文距离今天过去了多少天
             days_diff = (current_now - dt).days
             if days_diff > cutoff_days:
                 time_filtered_count += 1
-                continue # 超过配置的月份跨度，属于旧论文，果断裁剪丢弃
-        except Exception as e:
-            # 容错处理
+                continue 
+        except:
             published_date = published_raw[:10]
-        # ----------------------------------------
             
         raw_papers.append({'title': title, 'summary': summary, 'url': paper_url, 'date': published_date})
 
-    print(f"📊 arXiv 初筛完成：成功捕获近 {config_months} 个月内论文 {len(raw_papers)} 篇（因超时历史原因自动过滤了 {time_filtered_count} 篇旧论文）。")
+    print(f"📊 arXiv 初筛完成：成功捕获近 {config_months} 个月内论文 {len(raw_papers)} 篇。")
 
-    # 3. 加载历史数据库（含去重与去污逻辑）
     database_file = "paper_database.json"
     historical_data = []
     if os.path.exists(database_file):
@@ -143,13 +116,11 @@ def main():
         except:
             historical_data = []
 
-    # 去污逻辑：提取历史库中生成成功的优质老论文 URL
     valid_existing_urls = {
         p['url'] for p in historical_data 
         if '失败' not in p.get('review', '') and 'error' not in p.get('review', '').lower() and '503' not in p.get('review', '')
     }
     
-    # 同时，历史记忆库里如果存了超过6个月的“超期老文献”，也需要同步进行网页清洗更新
     historical_data = [
         p for p in historical_data 
         if (current_now - datetime.strptime(p['date'], "%Y-%m-%d")).days <= cutoff_days
@@ -165,11 +136,12 @@ def main():
             if paper['url'] in valid_existing_urls:
                 continue
                 
-            # 清理可能存在的失败历史坏账
             historical_data = [p for p in historical_data if p['url'] != paper['url']]
+            print(f"🧠 官方原生 Gemini 智能审查文献: {paper['title'][:60]}...")
             
-            print(f"\n🧠 智能审查/重新修复文献: {paper['title']}")
-            
+            # 限制请求速率，防止触发官方基础限流（每篇论文间休息 2 秒）
+            time.sleep(2)
+
             # 第一阶段 - AI 智能语义精筛
             judge_prompt = (
                 f"你是一个精通计算机体系结构（Computer Architecture）的审稿人。\n"
@@ -180,11 +152,10 @@ def main():
                 f"摘要: {paper['summary']}"
             )
             
-            is_hardware_prefetch = ask_llm_with_fallback(judge_prompt, api_key)
-            print(f"🤖 语义审查裁决结果: [{is_hardware_prefetch}]")
+            is_hardware_prefetch = ask_gemini_native(judge_prompt, api_key)
+            print(f"   裁决结果: [{is_hardware_prefetch}]")
             
             if not is_hardware_prefetch or "是" not in is_hardware_prefetch:
-                print("⏩ 判定为噪声文献，已智能过滤。")
                 continue
                 
             # 第二阶段 - Semantic Scholar 顶会实时溯源
@@ -207,13 +178,13 @@ def main():
                             is_top = True
                         else:
                             venue_info = f"📝 已发表至: {raw_venue}"
-            except Exception as e:
-                print(f"⚠️ 顶会溯源网络发生轻微扰动: {e}")
+            except:
+                pass
 
-            # 第三阶段 - 多模型真实同行评审意见输出
+            # 第三阶段 - 官方原生真实同行评审意见输出
             review_prompt = (
                 f"你是一个精通计算机体系结构、微架构和存储子系统的顶级科学家。\n"
-                f"请认真阅读以下硬件预取相关论文的标题 and 摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
+                f"请认真阅读以下硬件预取相关论文的标题和摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
                 f"要求用中文，分为两部分回答（总字数控制在150字以内）：\n"
                 f"1. 核心创新：阐明其相较于传统预取器在微架构设计或算法上的核心突破点。\n"
                 f"2. 潜在价值：分析该方法对缓解存储墙或提升特定负载（如图计算、大模型推理）的实际工业价值。\n\n"
@@ -221,11 +192,11 @@ def main():
                 f"摘要: {paper['summary']}"
             )
             
-            gemini_review = ask_llm_with_fallback(review_prompt, api_key)
+            gemini_review = ask_gemini_native(review_prompt, api_key)
             if gemini_review:
                 gemini_review = gemini_review.replace('\n', '<br>')
             else:
-                gemini_review = "专家解读生成失败（全通道限流中）。"
+                gemini_review = "专家解读临时生成失败。"
             
             paper['venue'] = venue_info
             paper['is_top'] = is_top
@@ -234,7 +205,6 @@ def main():
             historical_data.insert(0, paper)
             filtered_new_papers.append(paper)
 
-    # 裁剪数据库，保持展示最精华的最近35篇
     historical_data = historical_data[:35]
 
     with open(database_file, "w", encoding="utf-8") as f:
@@ -340,7 +310,7 @@ def main():
         except Exception as e:
             print(f"❌ 主动推送失败: {e}")
 
-    print("🎯 【时间跨度锁定版】网页与调度引擎同步刷新成功！")
+    print("🎯 【官方直连高保版】网页与调度引擎同步刷新成功！")
 
 if __name__ == "__main__":
     main()
