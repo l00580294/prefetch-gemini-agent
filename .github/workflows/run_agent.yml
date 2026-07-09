@@ -29,16 +29,28 @@ jobs:
 
     - name: 自动同步数据库与静态网页（防冲突版）
       run: |
+- name: Commit and Push (Conflict-Free)
+      run: |
         git config --local user.email "actions@github.com"
-        git config --local user.name "GitHub Actions"
+        git config --local user.name "github-actions[bot]"
         
-        # 将生成的网页和记忆数据库一起加入暂存区
+        # 1. 强行先拉取线上最新的结构代码（如 main.py 和 config.yaml），但不盲目合并数据
+        git fetch origin main
+        
+        # 2. 将当前的 index.html 和 paper_database.json 暂存起来
         git add index.html paper_database.json
         
-        if ! git diff --quiet --staged; then
-          git commit -m "🔄 智能同步最新顶会勋章文献 [$(date '+%Y-%m-%d %H:%M:%S')]"
-          git pull --rebase origin main
+        # 3. 提交当前云端最新生成的干净成果
+        if git commit -m "🔄 智能同步最新顶会勋章文献 [$(date '+%Y-%m-%d %H:%M:%S')]" ; then
+          echo "✅ 检测到学术大屏数据有更新，准备强推上线..."
+          
+          # 4. 工业级绝杀：使用强制拉取合并策略，如果在网页和数据上遇到冲突，一律以本次 Actions 刚刚运行生成的最新结果为准！
+          git pull --rebase -X theirs origin main
+          
+          # 5. 安全推送
           git push origin main
         else
-          echo "今日全网无符合条件的全新论文，无需更新数据库。"
+          echo "💤 今天没有抓取到满足半年的微架构新论文，无需更新网页。"
         fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
