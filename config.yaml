@@ -1,23 +1,20 @@
 search_queries:
-  - 'abs: "prefetcher" OR abs: "prefetching"'
-  - 'title: "prefetch" OR title: "prefetching"'
+  - 'ti:"hardware prefetch" OR abs:"hardware prefetcher" OR abs:"cache subsystem" OR abs:"memory wall" OR abs:"microarchitectures"'
+
+# 【新增：时间过滤配置】
+time_window:
+  months: 6  # 你可以随时手动把这里改成 3、12 或其他数字，单位为月
 
 filter_rules:
   include:
-    - "hardware prefetch"
-    - "cache prefetching"
-    - "spatial prefetching"
-    - "temporal prefetching"
-    - "instruction prefetch"
-    - "data prefetch"
-    - "pointer chasing"
-    - "stride prefetch"
-    - "memory subsystem"
+    - "prefetch"
+    - "cache"
+    - "memory"
+    - "fetch"
+    - "microarchitecture"
   exclude:
-    - "5G"
     - "cellular"
-    - "wireless"
-    - "web page"
-    - "html"
-    - "http"
+    - "5g"
+    - "web"
     - "cdn"
+    - "proactive fetching"
