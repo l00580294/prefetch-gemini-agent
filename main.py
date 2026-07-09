@@ -127,9 +127,22 @@ def main():
     if raw_papers and api_key:
         TOP_VENUES = ["isca", "micro", "hpca", "asplos", "ieee tc", "taco", "cal", "sigmetrics"]
         
+# 提取历史库中所有已经成功生成过解读的正常论文 URL
+        valid_existing_urls = {
+            p['url'] for p in historical_data 
+            if '失败' not in p.get('review', '') and 'error' not in p.get('review', '').lower() and '503' not in p.get('review', '')
+        }
+
         for paper in raw_papers:
-            if paper['url'] in existing_urls:
+            # 【核心修复】：只有当论文存在，且里面没有“生成失败”等脏缓存时，才允许跳过
+            if paper['url'] in valid_existing_urls:
                 continue
+                
+            # 如果虽然 URL 存在，但上次是失败的文本，我们先把它从历史库里清理掉，准备重新洗牌
+            historical_data = [p for p in historical_data if p['url'] != paper['url']]
+            
+            print(f"\n🧠 智能审查/重新修复文献: {paper['title']}")
+            # ... 后面保持不变 ...
                 
             print(f"\n🧠 智能审查新文献: {paper['title']}")
             
