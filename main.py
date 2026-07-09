@@ -8,7 +8,7 @@ import time
 from datetime import datetime
 
 # ==========================================
-# 【工业级请求：带硬超时的底层网络连接器】
+# 【底层网络连接器：带超时的健壮请求】
 # ==========================================
 def robust_http_request(url, headers=None, data=None, max_retries=3):
     if headers is None:
@@ -17,24 +17,21 @@ def robust_http_request(url, headers=None, data=None, max_retries=3):
     for attempt in range(max_retries):
         try:
             req = urllib.request.Request(url, headers=headers, data=data)
-            # 严格限制连接超时 10 秒，防止被第三方平台恶意挂起（Hang住）
             with urllib.request.urlopen(req, timeout=10) as response:
-                content = response.read(1024 * 1024 * 3) # 最大3MB限制
+                content = response.read(1024 * 1024 * 3)
                 if content:
                     return content
         except Exception as e:
             if attempt == max_retries - 1:
-                print(f"❌ 网络请求彻底失败 (已尝试 {max_retries} 次): 错误: {e}")
                 return None
             sleep_time = 2 ** attempt
             time.sleep(sleep_time)
     return None
 
 # ==========================================
-# 【核心升级：直连 Google 官方原生 AI Studio 引擎】
+# 【重构：带智能指数退避的防 429 限流 Gemini 原生引擎】
 # ==========================================
-def ask_gemini_native(prompt, api_key):
-    # 使用 Google 官方原生底层 REST API 端口（gemini-2.5-flash 官方标准终点）
+def ask_gemini_native_safe(prompt, api_key, max_retries=4):
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
     headers = {"Content-Type": "application/json"}
     
@@ -49,15 +46,28 @@ def ask_gemini_native(prompt, api_key):
     }
     data = json.dumps(payload).encode('utf-8')
     
-    res_bytes = robust_http_request(url, headers=headers, data=data)
-    if res_bytes:
+    for attempt in range(max_retries):
         try:
-            res_json = json.loads(res_bytes.decode('utf-8'))
-            # 解析 Google 官方标准的 JSON 响应树
-            content = res_json['candidates'][0]['content']['parts'][0]['text'].strip()
-            return content
+            req = urllib.request.Request(url, headers=headers, data=data)
+            with urllib.request.urlopen(req, timeout=12) as response:
+                res_bytes = response.read()
+                res_json = json.loads(res_bytes.decode('utf-8'))
+                return res_json['candidates'][0]['content']['parts'][0]['text'].strip()
+        except urllib.error.HTTPError as e:
+            # 【防 429 核心修复】：如果撞上官方限流 429
+            if e.code == 429:
+                # 实施更漫长的指数级退避休眠 (例如第1次挂起12秒，第2次24秒...)
+                backoff_time = 12 * (2 ** attempt)
+                print(f"🛑 遭遇 Google 官方 429 限流频率炸弹！脚本进入深度休眠 {backoff_time} 秒以恢复频控...")
+                time.sleep(backoff_time)
+                continue
+            else:
+                print(f"⚠️ Gemini 接口抛出 HTTP 错误: {e.code}")
+                break
         except Exception as e:
-            print(f"⚠️ 官方原生通道响应解析失败: {e}")
+            print(f"⚠️ 访问 Gemini 发生未知异常: {e}")
+            break
+            
     return None
 
 # ==========================================
@@ -70,11 +80,11 @@ def main():
     config_months = config.get('time_window', {}).get('months', 6)
     print(f"📅 时间窗口裁剪器：仅检索过去 {config_months} 个月内发表的新论文。")
 
-    # 缩小初筛池至 50 篇，既减轻 arXiv 压力，又能完美覆盖近半年的核心论文
     print("🚀 正在从 arXiv 实时海选原始文献...")
     raw_query = config['search_queries'][0]
     encoded_query = urllib.parse.quote(raw_query)
-    arxiv_url = f'http://export.arxiv.org/api/query?search_query={encoded_query}&max_results=50&sortBy=submittedDate&sortOrder=descending'
+    # 保持 40 篇的高效初筛窗口
+    arxiv_url = f'http://export.arxiv.org/api/query?search_query={encoded_query}&max_results=40&sortBy=submittedDate&sortOrder=descending'
 
     xml_data = robust_http_request(arxiv_url)
     if not xml_data:
@@ -85,7 +95,6 @@ def main():
     raw_papers = []
     current_now = datetime.now()
     cutoff_days = int(config_months * 30.5)
-    time_filtered_count = 0
 
     for entry in root.findall('{http://www.w3.org/2005/Atom}entry'):
         title = entry.find('{http://www.w3.org/2005/Atom}title').text.strip().replace('\n', ' ')
@@ -98,14 +107,13 @@ def main():
             published_date = dt.strftime("%Y-%m-%d")
             days_diff = (current_now - dt).days
             if days_diff > cutoff_days:
-                time_filtered_count += 1
                 continue 
         except:
             published_date = published_raw[:10]
             
         raw_papers.append({'title': title, 'summary': summary, 'url': paper_url, 'date': published_date})
 
-    print(f"📊 arXiv 初筛完成：成功捕获近 {config_months} 个月内论文 {len(raw_papers)} 篇。")
+    print(f"📊 arXiv 初筛完成：成功捕获近 {config_months} 个月内粗筛论文 {len(raw_papers)} 篇。")
 
     database_file = "paper_database.json"
     historical_data = []
@@ -137,10 +145,10 @@ def main():
                 continue
                 
             historical_data = [p for p in historical_data if p['url'] != paper['url']]
-            print(f"🧠 官方原生 Gemini 智能审查文献: {paper['title'][:60]}...")
+            print(f"🧠 智能审查文献: {paper['title'][:60]}...")
             
-            # 限制请求速率，防止触发官方基础限流（每篇论文间休息 2 秒）
-            time.sleep(2)
+            # 【主动机制】：每篇论文处理间基础冷却 3 秒，平滑请求曲线
+            time.sleep(3)
 
             # 第一阶段 - AI 智能语义精筛
             judge_prompt = (
@@ -152,7 +160,7 @@ def main():
                 f"摘要: {paper['summary']}"
             )
             
-            is_hardware_prefetch = ask_gemini_native(judge_prompt, api_key)
+            is_hardware_prefetch = ask_gemini_native_safe(judge_prompt, api_key)
             print(f"   裁决结果: [{is_hardware_prefetch}]")
             
             if not is_hardware_prefetch or "是" not in is_hardware_prefetch:
@@ -170,7 +178,6 @@ def main():
                     raw_venue = s2_data.get('venue', '')
                     if not raw_venue and s2_data.get('publicationVenue'):
                         raw_venue = s2_data['publicationVenue'].get('name', '')
-                    
                     if raw_venue:
                         matched = next((v for v in TOP_VENUES if v in raw_venue.lower()), None)
                         if matched:
@@ -181,7 +188,7 @@ def main():
             except:
                 pass
 
-            # 第三阶段 - 官方原生真实同行评审意见输出
+            # 第三阶段 - 同行评审意见输出
             review_prompt = (
                 f"你是一个精通计算机体系结构、微架构和存储子系统的顶级科学家。\n"
                 f"请认真阅读以下硬件预取相关论文的标题和摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
@@ -192,11 +199,11 @@ def main():
                 f"摘要: {paper['summary']}"
             )
             
-            gemini_review = ask_gemini_native(review_prompt, api_key)
+            gemini_review = ask_gemini_native_safe(review_prompt, api_key)
             if gemini_review:
                 gemini_review = gemini_review.replace('\n', '<br>')
             else:
-                gemini_review = "专家解读临时生成失败。"
+                gemini_review = "专家解读生成失败（触发频控限制）。"
             
             paper['venue'] = venue_info
             paper['is_top'] = is_top
@@ -206,7 +213,6 @@ def main():
             filtered_new_papers.append(paper)
 
     historical_data = historical_data[:35]
-
     with open(database_file, "w", encoding="utf-8") as f:
         json.dump(historical_data, f, ensure_ascii=False, indent=2)
 
@@ -310,7 +316,7 @@ def main():
         except Exception as e:
             print(f"❌ 主动推送失败: {e}")
 
-    print("🎯 【官方直连高保版】网页与调度引擎同步刷新成功！")
+    print("🎯 【防 429 抗压自愈版】引擎运行圆满成功！")
 
 if __name__ == "__main__":
     main()
