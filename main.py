@@ -6,6 +6,8 @@ import xml.etree.ElementTree as ET
 import yaml
 import time
 from datetime import datetime
+# 引入时间差计算库
+from datetime import timedelta
 
 # ==========================================
 # 【网络请求工具：带指数退避的健壮网络请求】
@@ -29,7 +31,7 @@ def robust_http_request(url, headers=None, data=None, max_retries=3):
     return None
 
 # ==========================================
-# 【核心重构：自动双通道智能降级大模型请求引擎】
+# 【大模型驱动：自动双通道智能降级请求引擎】
 # ==========================================
 def ask_llm_with_fallback(prompt, api_key):
     url = "https://openrouter.ai/api/v1/chat/completions"
@@ -40,11 +42,10 @@ def ask_llm_with_fallback(prompt, api_key):
         "X-Title": "Prefetch Academic Agent"
     }
     
-    # 建立多通道备用名单 (全部为 OpenRouter 平台的免费顶级大模型)
     models_pool = [
-        "google/gemini-2.5-flash",                  # 1号主力：Gemini 2.5 Flash
-        "meta-llama/llama-3.3-70b-instruct:free",    # 2号备胎：Meta 最强开源 Llama 3.3
-        "deepseek/deepseek-chat:free"                # 3号备胎：DeepSeek 免费通道
+        "google/gemini-2.5-flash",                  
+        "meta-llama/llama-3.3-70b-instruct:free",    
+        "deepseek/deepseek-chat:free"                
     ]
     
     for model_name in models_pool:
@@ -60,18 +61,16 @@ def ask_llm_with_fallback(prompt, api_key):
         if res_bytes:
             try:
                 res_json = json.loads(res_bytes.decode('utf-8'))
-                # 如果遇到有 error 字段（比如 503 高峰期拒绝），直接触发降级
                 if 'error' in res_json:
-                    print(f"⚠️ 模型 {model_name} 触发熔断/高峰拒绝: {res_json['error'].get('message', '503 Error')}")
+                    print(f"⚠️ 模型 {model_name} 高峰拒绝: {res_json['error'].get('message', '503 Error')}")
                     continue
-                
                 content = res_json['choices'][0]['message']['content'].strip()
                 print(f"✅ 模型 [{model_name}] 响应成功！")
                 return content
             except Exception as e:
-                print(f"⚠️ 解析模型 {model_name} 响应失败: {e}，尝试切换下一个备用通道...")
+                print(f"⚠️ 解析模型 {model_name} 失败: {e}")
         else:
-            print(f"⚠️ 模型 {model_name} 未能返回有效数据，尝试切换下一个备用通道...")
+            print(f"⚠️ 模型 {model_name} 未返回有效数据。")
             
     return None
 
@@ -79,13 +78,19 @@ def ask_llm_with_fallback(prompt, api_key):
 # 主运行核心逻辑
 # ==========================================
 def main():
+    # 1. 加载本地过滤配置文件
     with open('config.yaml', 'r', encoding='utf-8') as f:
         config = yaml.safe_load(f)
 
-    print("🚀 正在从 arXiv 实时海选最新的预取领域文献...")
+    # 读取配置的时间窗口（默认6个月）
+    config_months = config.get('time_window', {}).get('months', 6)
+    print(f"📅 已启用时间窗口裁剪器：仅检索过去 {config_months} 个月内发表的新论文。")
+
+    # 2. 从 arXiv 检索最新的预取论文 (放大池子到 100 篇，确保时间跨度覆盖完整)
+    print("🚀 正在从 arXiv 实时海选原始文献...")
     raw_query = config['search_queries'][0]
     encoded_query = urllib.parse.quote(raw_query)
-    arxiv_url = f'http://export.arxiv.org/api/query?search_query={encoded_query}&max_results=40&sortBy=submittedDate&sortOrder=descending'
+    arxiv_url = f'http://export.arxiv.org/api/query?search_query={encoded_query}&max_results=100&sortBy=submittedDate&sortOrder=descending'
 
     xml_data = robust_http_request(arxiv_url)
     if not xml_data:
@@ -94,22 +99,41 @@ def main():
         
     root = ET.fromstring(xml_data)
     raw_papers = []
+    
+    # 获取当前时间，用于计算时间差
+    current_now = datetime.now()
+    # 粗略计算截止日期：1个月约按30.5天计算
+    cutoff_days = int(config_months * 30.5)
+    
+    time_filtered_count = 0
+
     for entry in root.findall('{http://www.w3.org/2005/Atom}entry'):
         title = entry.find('{http://www.w3.org/2005/Atom}title').text.strip().replace('\n', ' ')
         summary = entry.find('{http://www.w3.org/2005/Atom}summary').text.strip().replace('\n', ' ')
         paper_url = entry.find('{http://www.w3.org/2005/Atom}id').text
         
         published_raw = entry.find('{http://www.w3.org/2005/Atom}published').text
+        
+        # --- 【核心新增：动态时间窗口裁剪算法】 ---
         try:
             dt = datetime.strptime(published_raw, "%Y-%m-%dT%H:%M:%SZ")
             published_date = dt.strftime("%Y-%m-%d")
-        except:
+            
+            # 计算论文距离今天过去了多少天
+            days_diff = (current_now - dt).days
+            if days_diff > cutoff_days:
+                time_filtered_count += 1
+                continue # 超过配置的月份跨度，属于旧论文，果断裁剪丢弃
+        except Exception as e:
+            # 容错处理
             published_date = published_raw[:10]
+        # ----------------------------------------
             
         raw_papers.append({'title': title, 'summary': summary, 'url': paper_url, 'date': published_date})
 
-    print(f"📊 arXiv 初筛捕获原始候选数据 {len(raw_papers)} 篇。开始注入大记忆图谱...")
+    print(f"📊 arXiv 初筛完成：成功捕获近 {config_months} 个月内论文 {len(raw_papers)} 篇（因超时历史原因自动过滤了 {time_filtered_count} 篇旧论文）。")
 
+    # 3. 加载历史数据库（含去重与去污逻辑）
     database_file = "paper_database.json"
     historical_data = []
     if os.path.exists(database_file):
@@ -119,32 +143,32 @@ def main():
         except:
             historical_data = []
 
-    existing_urls = {p['url'] for p in historical_data}
-    api_key = os.getenv("LLM_API_KEY")
+    # 去污逻辑：提取历史库中生成成功的优质老论文 URL
+    valid_existing_urls = {
+        p['url'] for p in historical_data 
+        if '失败' not in p.get('review', '') and 'error' not in p.get('review', '').lower() and '503' not in p.get('review', '')
+    }
+    
+    # 同时，历史记忆库里如果存了超过6个月的“超期老文献”，也需要同步进行网页清洗更新
+    historical_data = [
+        p for p in historical_data 
+        if (current_now - datetime.strptime(p['date'], "%Y-%m-%d")).days <= cutoff_days
+    ]
 
-    filtered_new_papers = [] # 记录今天真正通过审核并生成了解读的新论文
+    api_key = os.getenv("LLM_API_KEY")
+    filtered_new_papers = [] 
 
     if raw_papers and api_key:
         TOP_VENUES = ["isca", "micro", "hpca", "asplos", "ieee tc", "taco", "cal", "sigmetrics"]
         
-# 提取历史库中所有已经成功生成过解读的正常论文 URL
-        valid_existing_urls = {
-            p['url'] for p in historical_data 
-            if '失败' not in p.get('review', '') and 'error' not in p.get('review', '').lower() and '503' not in p.get('review', '')
-        }
-
         for paper in raw_papers:
-            # 【核心修复】：只有当论文存在，且里面没有“生成失败”等脏缓存时，才允许跳过
             if paper['url'] in valid_existing_urls:
                 continue
                 
-            # 如果虽然 URL 存在，但上次是失败的文本，我们先把它从历史库里清理掉，准备重新洗牌
+            # 清理可能存在的失败历史坏账
             historical_data = [p for p in historical_data if p['url'] != paper['url']]
             
             print(f"\n🧠 智能审查/重新修复文献: {paper['title']}")
-            # ... 后面保持不变 ...
-                
-            print(f"\n🧠 智能审查新文献: {paper['title']}")
             
             # 第一阶段 - AI 智能语义精筛
             judge_prompt = (
@@ -189,7 +213,7 @@ def main():
             # 第三阶段 - 多模型真实同行评审意见输出
             review_prompt = (
                 f"你是一个精通计算机体系结构、微架构和存储子系统的顶级科学家。\n"
-                f"请认真阅读以下硬件预取相关论文的标题和摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
+                f"请认真阅读以下硬件预取相关论文的标题 and 摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
                 f"要求用中文，分为两部分回答（总字数控制在150字以内）：\n"
                 f"1. 核心创新：阐明其相较于传统预取器在微架构设计或算法上的核心突破点。\n"
                 f"2. 潜在价值：分析该方法对缓解存储墙或提升特定负载（如图计算、大模型推理）的实际工业价值。\n\n"
@@ -210,6 +234,7 @@ def main():
             historical_data.insert(0, paper)
             filtered_new_papers.append(paper)
 
+    # 裁剪数据库，保持展示最精华的最近35篇
     historical_data = historical_data[:35]
 
     with open(database_file, "w", encoding="utf-8") as f:
@@ -227,7 +252,7 @@ def main():
             </div>
             <h2 class="card-title">{p['title']}</h2>
             <div class="card-meta">
-                <span>📅 抓取/发表时间: <strong>{p['date']}</strong></span>
+                <span>📅 发表时间: <strong>{p['date']}</strong></span>
                 <span>🔗 <a href="{p['url']}" target="_blank">查看 arXiv 官方原文</a></span>
             </div>
             <div class="card-analysis">
@@ -238,7 +263,7 @@ def main():
         """
 
     if not html_cards:
-        html_cards = "<p style='text-align:center; color:#64748b;'>科研雷达正在全网搜索中，暂无匹配文献。</p>"
+        html_cards = f"<p style='text-align:center; color:#64748b;'>科研雷达正在搜索中，近 {config_months} 个月内暂无最新硬件预取文献。</p>"
 
     update_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     html_content = f"""<!DOCTYPE html>
@@ -275,7 +300,7 @@ def main():
     <body>
         <div class="header">
             <h1>🚀 处理器预取算法文献追踪大屏</h1>
-            <p>基于跨平台高可用多模型（Gemini / Llama / DeepSeek）混合驱动</p>
+            <p>已锁定期限：仅呈现近 {config_months} 个月内发表的硬核前沿技术</p>
             <p style="font-size: 0.85rem; margin-top: 15px; opacity: 0.7;">🔄 大屏同步更新时间：{update_time} (北京时间)</p>
         </div>
         <div class="container">
@@ -292,7 +317,7 @@ def main():
         f.write(html_content)
         
     # ==========================================
-    # 【主动推送：飞书/钉钉群机器人弹窗】
+    # 【主动推送模块】
     # ==========================================
     webhook_url = os.getenv("WEBHOOK_URL")
     if filtered_new_papers and webhook_url:
@@ -313,9 +338,9 @@ def main():
             with urllib.request.urlopen(req, timeout=10) as r:
                 print("✅ 手机端消息弹窗成功送达！")
         except Exception as e:
-            print(f"❌ 主動推送失败: {e}")
+            print(f"❌ 主动推送失败: {e}")
 
-    print("🎯 大屏动态网页与高容错调度引擎同步刷新成功！")
+    print("🎯 【时间跨度锁定版】网页与调度引擎同步刷新成功！")
 
 if __name__ == "__main__":
     main()
