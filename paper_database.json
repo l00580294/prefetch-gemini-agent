@@ -1,5 +1,59 @@
 [
   {
+    "title": "Shifting in-DRAM",
+    "summary": "Processing-in-Memory (PIM) architectures enable computation directly within DRAM and help combat the memory wall problem. Bit-shifting is a fundamental operation that enables PIM applications such as shift-and-add multiplication, adders using carry propagation, and Galois field arithmetic used in cryptography algorithms like AES and Reed-Solomon error correction codes. Existing approaches to in-DRAM shifting require adding dedicated shifter circuits beneath the sense amplifiers to enable horizontal data movement across adjacent bitlines or vertical data layouts which store operand bits along a bitline to implement shifts as row-copy operations. In this paper, we propose a novel DRAM subarray design that enables in-DRAM bit-shifting for open-bitline architectures. In this new design, we built upon prior work that introduced a new type of cell used for row migration in asymmetric subarrays, called a \"migration cell\". We repurpose and extend the functionality by adding a row of migration cells at the top and bottom of each subarray which enables bidirectional bit-shifting within any given row. This new design maintains compatibility with standard DRAM operations. Unlike previous approaches to shifting, our design operates on horizontally-stored data, eliminating the need and overhead of data transposition, and our design leverages the existing cell structures, eliminating the need for additional complex logic and circuitry. We present an evaluation of our design that includes timing and energy analysis using NVMain, circuit-level validation of the in-DRAM shift operation using LTSPICE, and a VLSI layout implementation in Cadence Virtuoso.",
+    "url": "http://arxiv.org/abs/2602.24269v1",
+    "date": "2026-02-27",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "专家解读生成失败（触发频控限制）。"
+  },
+  {
+    "title": "Accelerating OpenPangu Inference on NPU via Speculative Decoding",
+    "summary": "To mitigate the Memory Wall bottleneck encountered by Large Language Models (LLMs) during inference on \\textbf{NPU} hardware, and addressing the scarcity of native support for mainstream speculative decoding algorithms on domestic infrastructure, this study presents an end-to-end speculative inference acceleration scheme for OpenPangu-7B.",
+    "url": "http://arxiv.org/abs/2603.03383v1",
+    "date": "2026-03-03",
+    "venue": "📝 已发表至: arXiv.org",
+    "is_top": false,
+    "review": "专家解读生成失败（触发频控限制）。"
+  },
+  {
+    "title": "PCR: A Prefetch-Enhanced Cache Reuse System for Low-Latency RAG Serving",
+    "summary": "Retrieval-Augmented Generation (RAG) systems enhance the performance of large language models (LLMs) by incorporating supplementary retrieved documents, enabling more accurate and context-aware responses. However, integrating these external documents often results in very long input sequences, which significantly increases computation costs during the prefill stage, where key-value (KV) representations for all input tokens are generated. This latency bottleneck becomes especially pronounced under high-throughput serving scenarios. KV-cache reuse offers a promising solution by storing previously computed KV states for shared input prefixes, thereby avoiding redundant computation across requests that contain overlapping context. Yet, the effectiveness of cache reuse is often limited by three practical challenges: low cache hit rates due to naive eviction policies, high CPU-GPU data transfer overhead, and slow SSD I/O when caches spill to storage. To address these issues, we propose PCR, a system designed to maximize KV-cache reuse efficiency through intelligent prefetching and pipelined data movement. Specifically, PCR introduces three key techniques: (1) a prefix-tree caching structure with a look-ahead LRU replacement policy that uses pending requests in the scheduler queue to improve cache hit ratios; (2) layer-wise overlapping that pipelines KV-cache loading and GPU computation across CUDA streams to hide communication latency; and (3) queue-based prefetching that proactively loads relevant KV caches from SSD into DRAM before they are needed. Extensive experiments show that PCR outperforms existing KV-cache reuse methods, achieving up to a 2.47x speedup in terms of average TTFT.",
+    "url": "http://arxiv.org/abs/2603.23049v1",
+    "date": "2026-03-24",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "专家解读生成失败（触发频控限制）。"
+  },
+  {
+    "title": "Stencil Computations on Cerebras Wafer-Scale Engine",
+    "summary": "Stencil computations are a fundamental kernel in scientific computing, critical for simulations in domains such as fluid dynamics and climate modeling. However, these computations are often memory-bound on traditional High-Performance Computing architectures like GPUs, struggling against the \"Memory Wall\". Simultaneously, the rise of AI-oriented hardware, such as the Cerebras Wafer-Scale Engine, offers massive core parallelism and high-bandwidth on-chip memory, though typically optimized for lower-precision workloads. This work investigates the viability of bridging this divergence by mapping stencil algorithms onto the Cerebras WSE-3. The study introduces CStencil, a novel framework designed to implement two-dimensional stencil computations on the WSE-3. To ensure a rigorous and fair performance evaluation, the research also adapts ConvStencil, a state-of-the-art GPU stencil solver, porting it from its original double-precision design to single-precision for execution on an NVIDIA A100 GPU. Experimental results show that the WSE-3's distributed SRAM and mesh interconnect effectively eliminate the off-chip memory bottlenecks common in GPU implementations. CStencil achieves speedups of up to 342x over the adapted ConvStencil version. A roofline model analysis further confirms that CStencil saturates the available compute and memory resources, demonstrating that the WSE dataflow architecture can be successfully repurposed for traditional scientific algorithms. These findings highlight the potential of the WSE-3 to deliver hardware utilization levels unattainable on conventional systems, offering a promising path toward overcoming the memory limitations of current HPC architectures.",
+    "url": "http://arxiv.org/abs/2605.07954v1",
+    "date": "2026-05-08",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "专家解读生成失败（触发频控限制）。"
+  },
+  {
+    "title": "SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation",
+    "summary": "Autoregressive models excel in visual generation by treating images as 1D sequences of discrete tokens, mirroring language modeling. However, this flattening discards the intrinsic 2D spatial locality of visual signals, creating severe computational bottlenecks during inference. We introduce Spatially Speculative Decoding (SSD), a framework that aligns the predictive objective with the natural geometry of images. Rather than predicting only the immediate next token in a 1D sequence, our model simultaneously predicts the adjacent horizontal token and the token directly below it. By capitalizing on this 2D spatial correlation, spatially speculative decoding overcomes the memory wall in visual inference. Our approach accelerates autoregressive image generation by up to 13.3x while maintaining high fidelity on DPG-Bench and GenEval. Our results suggest that respecting the underlying geometry of vision unlocks massive computational efficiencies, paving the way for real-time, high-resolution autoregressive generative models.",
+    "url": "http://arxiv.org/abs/2606.20543v1",
+    "date": "2026-06-18",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "专家解读生成失败（触发频控限制）。"
+  },
+  {
+    "title": "TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout",
+    "summary": "Large Language Model (LLM) inference is bottlenecked by the capacity and bandwidth of GPU High-Bandwidth Memory (HBM). Recent proposals, such as High-Bandwidth Flash (HBF) and RoMe, offer higher capacity or bandwidth than HBM, but require a minimum access granularity of kilobytes. We show that these Large-Granularity Memory Systems (LGMS) can degrade the performance of tiled matrix-multiplication, which is the dominant operation in LLM inference, by up to an order of magnitude. The root cause of the slowdown is read amplification, where memory requests fetch far more data than the tile actually needs. This waste stems from a fundamental mismatch between the two-dimensional nature of compute tiles and the one-dimensional memory layout, leading to each request spilling well beyond the tile boundaries.   To mitigate read amplification, we propose to use tile-major layout for LGMS. Rather than storing data as a one-dimensional strip, tile-major layout reshapes each contiguous memory block into a two-dimensional rectangle, aligning memory granularity with tile boundaries. To ease the adoption of tile-major layout on GPUs, we propose TileLens, lightweight software and hardware extensions that collectively cover major classes of GPU kernels. TileLens-SW extends GPU DSLs so that DSL-based kernels can adopt tile-major in global memory by changing only the layout descriptor. TileLens-HW extends the Tensor Memory Accelerator (TMA) for transparent tile-major support in TMA-based kernels without code changes. We evaluate TileLens on a cycle-level simulator using matrix-multiplication kernels from Qwen-3 30B and Llama-3.1 70B. Combining a tile-major layout with an adaptive hardware prefetcher, TileLens achieves near-HBM performance on HBF-augmented GPUs with a 5us HBF NAND read latency, reducing the geomean slowdown from 1.61-6.49x with conventional layouts to within 1% of an HBM-only baseline.",
+    "url": "http://arxiv.org/abs/2607.04031v1",
+    "date": "2026-07-04",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "专家解读生成失败（触发频控限制）。"
+  },
+  {
     "title": "Spiker-LL: An Energy-Efficient FPGA Accelerator Enabling Adaptive Local Learning in Spiking Neural Networks",
     "summary": "Deploying adaptive intelligence at the edge remains challenging due to the high computational and energy cost of training neural models. Spiking Neural Networks (SNNs) offer a promising alternative, but enabling on-device learning requires hardware-algorithm co-design. This paper presents SPIKER-LL, an FPGA-based SNN accelerator that extends the open-source Spiker+ inference architecture with efficient support for the STSF local learning rule. Through targeted microarchitectural extensions, SPIKER-LL performs inference and online learning with minimal overhead. Across MNIST, F-MNIST, and DIGITS, it achieves up to 93% accuracy, sub-millisecond latency, and less than 0.1 mJ per inference, while remaining DSP-free and highly scalable for edge-FPGA deployments.",
     "url": "http://arxiv.org/abs/2605.18003v1",
