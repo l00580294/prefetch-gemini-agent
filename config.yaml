@@ -1,9 +1,9 @@
 search_queries:
-  - 'ti:"hardware prefetch" OR abs:"hardware prefetcher" OR abs:"cache subsystem" OR abs:"memory wall" OR abs:"microarchitectures"'
+  # 收紧检索：锁定处理器、微架构、硬件预取、缓存优化，排除纯网络和安全密码学
+  - 'ti:"hardware prefetch" OR ti:"prefetcher" OR abs:"hardware prefetcher" OR (abs:"cache subsystem" AND abs:"microarchitecture") OR abs:"memory wall"'
 
-# 【新增：时间过滤配置】
 time_window:
-  months: 6  # 你可以随时手动把这里改成 3、12 或其他数字，单位为月
+  months: 6
 
 filter_rules:
   include:
@@ -17,4 +17,6 @@ filter_rules:
     - "5g"
     - "web"
     - "cdn"
-    - "proactive fetching"
+    - "cryptography"
+    - "quantum"
+    - "security"
