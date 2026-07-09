@@ -1,157 +1,158 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>处理器预取算法文献追踪大屏</title>
-    <style>
-        :root { --bg: #f8fafc; --text: #1e293b; --primary: #2563eb; --card-bg: #ffffff; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
-        .header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; text-align: center; padding: 45px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-        .header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.05em; }
-        .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 1rem; }
-        .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-        .card { background: var(--card-bg); border-radius: 16px; padding: 28px; margin-bottom: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .card-header-flow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .card-tag { display: inline-block; background: #f1f5f9; color: #475569; font-weight: 700; padding: 4px 12px; border-radius: 9999px; font-size: 0.85rem; }
-        .badge { padding: 6px 14px; border-radius: 9999px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-        .badge-top { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-        .badge-normal { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-        .badge-arxiv { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
-        .card-title { font-size: 1.4rem; margin: 0 0 15px 0; font-weight: 700; color: #0f172a; line-height: 1.3; }
-        .card-meta { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; display: flex; gap: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
-        .card-meta a { color: var(--primary); text-decoration: none; font-weight: 600; }
-        .card-meta a:hover { text-decoration: underline; }
-        .card-analysis { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 18px 20px; border-radius: 0 12px 12px 0; }
-        .card-analysis h3 { margin: 0 0 8px 0; font-size: 1.05rem; color: #166534; font-weight: 700; }
-        .card-analysis p { margin: 0; color: #14532d; font-size: 0.98rem; text-align: justify; }
-        footer { text-align: center; padding: 40px; color: #94a3b8; font-size: 0.85rem; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🚀 处理器预取算法文献追踪面板</h1>
-        <p>集成 Semantic Scholar 顶会实时溯源与 Google Gemini 2.5 真实客观评审</p>
-        <p style="font-size: 0.85rem; margin-top: 15px; opacity: 0.7;">🔄 大屏同步更新时间：2026-07-09 13:48:49 (北京时间)</p>
-    </div>
-    <div class="container">
+    <html lang="zh-CN">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>处理器预取算法文献追踪大屏</title>
+        <style>
+            :root { --bg: #f8fafc; --text: #1e293b; --primary: #2563eb; --card-bg: #ffffff; }
+            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
+            .header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; text-align: center; padding: 45px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+            .header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.05em; }
+            .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 1rem; }
+            .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+            .card { background: var(--card-bg); border-radius: 16px; padding: 28px; margin-bottom: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: transform 0.2s; }
+            .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
+            .card-header-flow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+            .card-tag { display: inline-block; background: #f1f5f9; color: #475569; font-weight: 700; padding: 4px 12px; border-radius: 9999px; font-size: 0.85rem; }
+            .badge { padding: 6px 14px; border-radius: 9999px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+            .badge-top { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+            .badge-normal { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+            .badge-arxiv { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
+            .card-title { font-size: 1.4rem; margin: 0 0 15px 0; font-weight: 700; color: #0f172a; line-height: 1.3; }
+            .card-meta { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; display: flex; gap: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
+            .card-meta a { color: var(--primary); text-decoration: none; font-weight: 600; }
+            .card-meta a:hover { text-decoration: underline; }
+            .card-analysis { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 18px 20px; border-radius: 0 12px 12px 0; }
+            .card-analysis h3 { margin: 0 0 8px 0; font-size: 1.05rem; color: #166534; font-weight: 700; }
+            .card-analysis p { margin: 0; color: #14532d; font-size: 0.98rem; text-align: justify; }
+            footer { text-align: center; padding: 40px; color: #94a3b8; font-size: 0.85rem; }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>🚀 处理器预取算法文献追踪大屏</h1>
+            <p>基于跨平台高可用多模型（Gemini / Llama / DeepSeek）混合驱动</p>
+            <p style="font-size: 0.85rem; margin-top: 15px; opacity: 0.7;">🔄 大屏同步更新时间：2026-07-09 14:21:01 (北京时间)</p>
+        </div>
+        <div class="container">
+            
+        <div class="card">
+            <div class="card-header-flow">
+                <div class="card-tag">文献 1</div>
+                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+            </div>
+            <h2 class="card-title">Agentic Architect: An Agentic AI Framework for Architecture Design Exploration and Optimization</h2>
+            <div class="card-meta">
+                <span>📅 抓取/发表时间: <strong>2026-04-28</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2604.25083v1" target="_blank">查看 arXiv 官方原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>🔬 AI 真实学术解读：</h3>
+                <p>Gemini 实时解读生成失败: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-2.5-flash\nPlease retry in 10.1013354s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash', 'location': 'global'}, 'quotaValue': '5'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '10s'}]}}</p>
+            </div>
+        </div>
         
-    <div class="card">
-        <div class="card-header-flow">
-            <div class="card-tag">文献 1</div>
-            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+        <div class="card">
+            <div class="card-header-flow">
+                <div class="card-tag">文献 2</div>
+                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+            </div>
+            <h2 class="card-title">Enhancing Instruction Prefetching via Cache and TLB Management</h2>
+            <div class="card-meta">
+                <span>📅 抓取/发表时间: <strong>2026-05-12</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2605.12433v1" target="_blank">查看 arXiv 官方原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>🔬 AI 真实学术解读：</h3>
+                <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+            </div>
         </div>
-        <h2 class="card-title">Agentic Architect: An Agentic AI Framework for Architecture Design Exploration and Optimization</h2>
-        <div class="card-meta">
-            <span>📅 抓取/发表时间: <strong>2026-04-28</strong></span>
-            <span>🔗 <a href="http://arxiv.org/abs/2604.25083v1" target="_blank">查看 arXiv 官方原文</a></span>
+        
+        <div class="card">
+            <div class="card-header-flow">
+                <div class="card-tag">文献 3</div>
+                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+            </div>
+            <h2 class="card-title">ICP: Exploiting Instruction Correlation for Prefetching Irregular Memory Accesses</h2>
+            <div class="card-meta">
+                <span>📅 抓取/发表时间: <strong>2026-05-15</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2605.15645v1" target="_blank">查看 arXiv 官方原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>🔬 AI 真实学术解读：</h3>
+                <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+            </div>
         </div>
-        <div class="card-analysis">
-            <h3>🔬 Gemini 真实学术解读：</h3>
-            <p>Gemini 实时解读生成失败: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-2.5-flash\nPlease retry in 10.1013354s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash', 'location': 'global'}, 'quotaValue': '5'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '10s'}]}}</p>
+        
+        <div class="card">
+            <div class="card-header-flow">
+                <div class="card-tag">文献 4</div>
+                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+            </div>
+            <h2 class="card-title">TTP: A Hardware-Efficient Design for Precise Prefetching in Ray Tracing</h2>
+            <div class="card-meta">
+                <span>📅 抓取/发表时间: <strong>2026-05-15</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2605.16253v1" target="_blank">查看 arXiv 官方原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>🔬 AI 真实学术解读：</h3>
+                <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+            </div>
         </div>
-    </div>
+        
+        <div class="card">
+            <div class="card-header-flow">
+                <div class="card-tag">文献 5</div>
+                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+            </div>
+            <h2 class="card-title">Orion: Enabling Self-adaptive Memory Management for On-device Online Continual Learning</h2>
+            <div class="card-meta">
+                <span>📅 抓取/发表时间: <strong>2026-05-26</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2605.26473v1" target="_blank">查看 arXiv 官方原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>🔬 AI 真实学术解读：</h3>
+                <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header-flow">
+                <div class="card-tag">文献 6</div>
+                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+            </div>
+            <h2 class="card-title">Toward Intelligent Prefetching: A Survey on Complex Memory Access Prediction Techniques</h2>
+            <div class="card-meta">
+                <span>📅 抓取/发表时间: <strong>2026-06-08</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2606.09955v1" target="_blank">查看 arXiv 官方原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>🔬 AI 真实学术解读：</h3>
+                <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header-flow">
+                <div class="card-tag">文献 7</div>
+                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+            </div>
+            <h2 class="card-title">TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout</h2>
+            <div class="card-meta">
+                <span>📅 抓取/发表时间: <strong>2026-07-04</strong></span>
+                <span>🔗 <a href="http://arxiv.org/abs/2607.04031v1" target="_blank">查看 arXiv 官方原文</a></span>
+            </div>
+            <div class="card-analysis">
+                <h3>🔬 AI 真实学术解读：</h3>
+                <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+            </div>
+        </div>
+        
+        </div>
+        <footer>
+            <p>© 2026 Prefetch Paper Agent | 借鉴顶级学术智库标准构建</p>
+        </footer>
+    </body>
+    </html>
     
-    <div class="card">
-        <div class="card-header-flow">
-            <div class="card-tag">文献 2</div>
-            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
-        </div>
-        <h2 class="card-title">Enhancing Instruction Prefetching via Cache and TLB Management</h2>
-        <div class="card-meta">
-            <span>📅 抓取/发表时间: <strong>2026-05-12</strong></span>
-            <span>🔗 <a href="http://arxiv.org/abs/2605.12433v1" target="_blank">查看 arXiv 官方原文</a></span>
-        </div>
-        <div class="card-analysis">
-            <h3>🔬 Gemini 真实学术解读：</h3>
-            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-header-flow">
-            <div class="card-tag">文献 3</div>
-            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
-        </div>
-        <h2 class="card-title">ICP: Exploiting Instruction Correlation for Prefetching Irregular Memory Accesses</h2>
-        <div class="card-meta">
-            <span>📅 抓取/发表时间: <strong>2026-05-15</strong></span>
-            <span>🔗 <a href="http://arxiv.org/abs/2605.15645v1" target="_blank">查看 arXiv 官方原文</a></span>
-        </div>
-        <div class="card-analysis">
-            <h3>🔬 Gemini 真实学术解读：</h3>
-            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-header-flow">
-            <div class="card-tag">文献 4</div>
-            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
-        </div>
-        <h2 class="card-title">TTP: A Hardware-Efficient Design for Precise Prefetching in Ray Tracing</h2>
-        <div class="card-meta">
-            <span>📅 抓取/发表时间: <strong>2026-05-15</strong></span>
-            <span>🔗 <a href="http://arxiv.org/abs/2605.16253v1" target="_blank">查看 arXiv 官方原文</a></span>
-        </div>
-        <div class="card-analysis">
-            <h3>🔬 Gemini 真实学术解读：</h3>
-            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-header-flow">
-            <div class="card-tag">文献 5</div>
-            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
-        </div>
-        <h2 class="card-title">Orion: Enabling Self-adaptive Memory Management for On-device Online Continual Learning</h2>
-        <div class="card-meta">
-            <span>📅 抓取/发表时间: <strong>2026-05-26</strong></span>
-            <span>🔗 <a href="http://arxiv.org/abs/2605.26473v1" target="_blank">查看 arXiv 官方原文</a></span>
-        </div>
-        <div class="card-analysis">
-            <h3>🔬 Gemini 真实学术解读：</h3>
-            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-header-flow">
-            <div class="card-tag">文献 6</div>
-            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
-        </div>
-        <h2 class="card-title">Toward Intelligent Prefetching: A Survey on Complex Memory Access Prediction Techniques</h2>
-        <div class="card-meta">
-            <span>📅 抓取/发表时间: <strong>2026-06-08</strong></span>
-            <span>🔗 <a href="http://arxiv.org/abs/2606.09955v1" target="_blank">查看 arXiv 官方原文</a></span>
-        </div>
-        <div class="card-analysis">
-            <h3>🔬 Gemini 真实学术解读：</h3>
-            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-header-flow">
-            <div class="card-tag">文献 7</div>
-            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
-        </div>
-        <h2 class="card-title">TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout</h2>
-        <div class="card-meta">
-            <span>📅 抓取/发表时间: <strong>2026-07-04</strong></span>
-            <span>🔗 <a href="http://arxiv.org/abs/2607.04031v1" target="_blank">查看 arXiv 官方原文</a></span>
-        </div>
-        <div class="card-analysis">
-            <h3>🔬 Gemini 真实学术解读：</h3>
-            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
-        </div>
-    </div>
-    
-    </div>
-    <footer>
-        <p>© 2026 Prefetch Paper Agent | 借鉴顶级学术智库标准构建</p>
-    </footer>
-</body>
-</html>
