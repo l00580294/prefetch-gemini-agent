@@ -7,112 +7,151 @@
     <style>
         :root { --bg: #f8fafc; --text: #1e293b; --primary: #2563eb; --card-bg: #ffffff; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
-        .header { background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); color: white; text-align: center; padding: 40px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; text-align: center; padding: 45px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
         .header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.05em; }
         .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 1rem; }
         .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
         .card { background: var(--card-bg); border-radius: 16px; padding: 28px; margin-bottom: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: transform 0.2s; }
         .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .card-tag { display: inline-block; background: #dbeafe; color: #1e40af; font-weight: 700; padding: 4px 12px; border-radius: 9999px; font-size: 0.85rem; margin-bottom: 12px; }
+        .card-header-flow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .card-tag { display: inline-block; background: #f1f5f9; color: #475569; font-weight: 700; padding: 4px 12px; border-radius: 9999px; font-size: 0.85rem; }
+        .badge { padding: 6px 14px; border-radius: 9999px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .badge-top { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+        .badge-normal { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
+        .badge-arxiv { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
         .card-title { font-size: 1.4rem; margin: 0 0 15px 0; font-weight: 700; color: #0f172a; line-height: 1.3; }
         .card-meta { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; display: flex; gap: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
         .card-meta a { color: var(--primary); text-decoration: none; font-weight: 600; }
         .card-meta a:hover { text-decoration: underline; }
-        .card-analysis { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 15px 20px; border-radius: 0 12px 12px 0; }
+        .card-analysis { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 18px 20px; border-radius: 0 12px 12px 0; }
         .card-analysis h3 { margin: 0 0 8px 0; font-size: 1.05rem; color: #166534; font-weight: 700; }
-        .card-analysis p { margin: 0; color: #14532d; font-size: 1rem; }
-        footer { text-align: center; padding: 30px; color: #94a3b8; font-size: 0.85rem; }
+        .card-analysis p { margin: 0; color: #14532d; font-size: 0.98rem; text-align: justify; }
+        footer { text-align: center; padding: 40px; color: #94a3b8; font-size: 0.85rem; }
     </style>
 </head>
 <body>
     <div class="header">
         <h1>🚀 处理器预取算法文献追踪面板</h1>
-        <p>基于开源规则引擎与 Google Gemini 2.5 Flash 强力驱动</p>
-        <p style="font-size: 0.85rem; margin-top: 15px; opacity: 0.7;">🔄 智能生成时间：2026-07-09 04:27:25 (北京时间)</p>
+        <p>集成 Semantic Scholar 顶会实时溯源与 Google Gemini 2.5 真实客观评审</p>
+        <p style="font-size: 0.85rem; margin-top: 15px; opacity: 0.7;">🔄 大屏同步更新时间：2026-07-09 13:48:49 (北京时间)</p>
     </div>
     <div class="container">
         
-        <div class="card">
-            <div class="card-tag">论文 1</div>
-            <h2 class="card-title">TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-07-04</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2607.04031v1" target="_blank">查看 arXiv 原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>💡 Gemini 专家解读：</h3>
-                <p>1.  **核心创新点：** 该论文的核心创新是TileLens，它通过引入一种透明的**瓦片主序二维内存布局**，解决了大粒度内存系统（如HBF）中一维存储与二维计算瓦片不匹配导致的**读取放大问题**，从而将内存访问粒度与计算瓦片对齐，减少了LLM矩阵乘法中的数据冗余搬运。<br>2.  **实验效果：** 实验结果表明，TileLens结合自适应硬件预取器后，在HBF增强型GPU上处理LLM矩阵乘法时，能将传统布局导致的1.61-6.49倍性能下降减少到HBM基准性能的1%以内，实现了接近HBM的性能。</p>
-            </div>
+    <div class="card">
+        <div class="card-header-flow">
+            <div class="card-tag">文献 1</div>
+            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
         </div>
-        
-        <div class="card">
-            <div class="card-tag">论文 2</div>
-            <h2 class="card-title">Toward Intelligent Prefetching: A Survey on Complex Memory Access Prediction Techniques</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-06-08</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2606.09955v1" target="_blank">查看 arXiv 原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>💡 Gemini 专家解读：</h3>
-                <p>这篇综述论文的核心创新点在于，它针对传统预取器难以处理的复杂不规则内存访问模式，系统性地提出了一个多维度分类体系，用于组织和评估基于机器学习的智能预取技术。<br>通过深入分析，论文揭示了机器学习预取器在准确性与资源开销之间存在的权衡边界，指出其模型复杂性应与缓存层级相匹配，并强调了运行时适应性与模型容量之间的矛盾，这些发现为未来高效能智能预取器的设计提供了关键指导。</p>
-            </div>
+        <h2 class="card-title">Agentic Architect: An Agentic AI Framework for Architecture Design Exploration and Optimization</h2>
+        <div class="card-meta">
+            <span>📅 抓取/发表时间: <strong>2026-04-28</strong></span>
+            <span>🔗 <a href="http://arxiv.org/abs/2604.25083v1" target="_blank">查看 arXiv 官方原文</a></span>
         </div>
-        
-        <div class="card">
-            <div class="card-tag">论文 3</div>
-            <h2 class="card-title">Orion: Enabling Self-adaptive Memory Management for On-device Online Continual Learning</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-05-26</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2605.26473v1" target="_blank">查看 arXiv 原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>💡 Gemini 专家解读：</h3>
-                <p>Orion框架创新性地提出一种自适应内存管理策略，通过统一运行时指标动态调整OCL组件内存，并辅以系统级数据预取技术，旨在严苛内存限制下协同优化训练效率、可塑性与稳定性。<br>实验证明，该框架能在显著提升训练速度的同时，保持学习性能平衡，且仅引入极低的运行时、内存及能耗开销，为设备端持续学习提供了实用解决方案。</p>
-            </div>
+        <div class="card-analysis">
+            <h3>🔬 Gemini 真实学术解读：</h3>
+            <p>Gemini 实时解读生成失败: 429 RESOURCE_EXHAUSTED. {'error': {'code': 429, 'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. To monitor your current usage, head to: https://ai.dev/rate-limit. \n* Quota exceeded for metric: generativelanguage.googleapis.com/generate_content_free_tier_requests, limit: 5, model: gemini-2.5-flash\nPlease retry in 10.1013354s.', 'status': 'RESOURCE_EXHAUSTED', 'details': [{'@type': 'type.googleapis.com/google.rpc.Help', 'links': [{'description': 'Learn more about Gemini API quotas', 'url': 'https://ai.google.dev/gemini-api/docs/rate-limits'}]}, {'@type': 'type.googleapis.com/google.rpc.QuotaFailure', 'violations': [{'quotaMetric': 'generativelanguage.googleapis.com/generate_content_free_tier_requests', 'quotaId': 'GenerateRequestsPerMinutePerProjectPerModel-FreeTier', 'quotaDimensions': {'model': 'gemini-2.5-flash', 'location': 'global'}, 'quotaValue': '5'}]}, {'@type': 'type.googleapis.com/google.rpc.RetryInfo', 'retryDelay': '10s'}]}}</p>
         </div>
-        
-        <div class="card">
-            <div class="card-tag">论文 4</div>
-            <h2 class="card-title">TTP: A Hardware-Efficient Design for Precise Prefetching in Ray Tracing</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-05-15</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2605.16253v1" target="_blank">查看 arXiv 原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>💡 Gemini 专家解读：</h3>
-                <p>TTP算法的核心创新在于利用光线追踪硬件单元中线程现有的树遍历堆栈上存储的节点地址，在节点连续弹出等特定时机进行高精度的BVH树节点预取。<br>该算法在循环级模拟器上实现了平均1.48倍的加速比（最高1.89倍），L1预取精度高达98.92%，且硬件开销几乎可以忽略不计。</p>
-            </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header-flow">
+            <div class="card-tag">文献 2</div>
+            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
         </div>
-        
-        <div class="card">
-            <div class="card-tag">论文 5</div>
-            <h2 class="card-title">ICP: Exploiting Instruction Correlation for Prefetching Irregular Memory Accesses</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-05-15</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2605.15645v1" target="_blank">查看 arXiv 原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>💡 Gemini 专家解读：</h3>
-                <p>核心创新点是：传统的预取器依赖内存地址的重复性，但ICP开创性地通过学习指令之间的关联性，来预测并预取不规则的内存访问，即使地址本身不重复。<br><br>实验效果是：ICP在处理不规则访存时，相较于现有最佳技术能带来高达14%的性能提升，同时仅需2.1 KB的极小硬件存储，比传统预取器节省了三个数量级以上。</p>
-            </div>
+        <h2 class="card-title">Enhancing Instruction Prefetching via Cache and TLB Management</h2>
+        <div class="card-meta">
+            <span>📅 抓取/发表时间: <strong>2026-05-12</strong></span>
+            <span>🔗 <a href="http://arxiv.org/abs/2605.12433v1" target="_blank">查看 arXiv 官方原文</a></span>
         </div>
-        
-        <div class="card">
-            <div class="card-tag">论文 6</div>
-            <h2 class="card-title">Enhancing Instruction Prefetching via Cache and TLB Management</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-05-12</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2605.12433v1" target="_blank">查看 arXiv 原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>💡 Gemini 专家解读：</h3>
-                <p>该论文提出IP-CaT，一个首次联合优化TLB和缓存管理的新框架，旨在通过加速跨页指令的地址翻译和更智能地管理预取指令在缓存中的存放，来全面提升指令预取效率。<br>实验证明，IP-CaT在105个服务器工作负载上表现出稳定的性能提升，例如与EPI结合时平均加速8.7%，并超越了现有各类先进的TLB预取和缓存替换策略。</p>
-            </div>
+        <div class="card-analysis">
+            <h3>🔬 Gemini 真实学术解读：</h3>
+            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
         </div>
-        
+    </div>
+    
+    <div class="card">
+        <div class="card-header-flow">
+            <div class="card-tag">文献 3</div>
+            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+        </div>
+        <h2 class="card-title">ICP: Exploiting Instruction Correlation for Prefetching Irregular Memory Accesses</h2>
+        <div class="card-meta">
+            <span>📅 抓取/发表时间: <strong>2026-05-15</strong></span>
+            <span>🔗 <a href="http://arxiv.org/abs/2605.15645v1" target="_blank">查看 arXiv 官方原文</a></span>
+        </div>
+        <div class="card-analysis">
+            <h3>🔬 Gemini 真实学术解读：</h3>
+            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header-flow">
+            <div class="card-tag">文献 4</div>
+            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+        </div>
+        <h2 class="card-title">TTP: A Hardware-Efficient Design for Precise Prefetching in Ray Tracing</h2>
+        <div class="card-meta">
+            <span>📅 抓取/发表时间: <strong>2026-05-15</strong></span>
+            <span>🔗 <a href="http://arxiv.org/abs/2605.16253v1" target="_blank">查看 arXiv 官方原文</a></span>
+        </div>
+        <div class="card-analysis">
+            <h3>🔬 Gemini 真实学术解读：</h3>
+            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header-flow">
+            <div class="card-tag">文献 5</div>
+            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+        </div>
+        <h2 class="card-title">Orion: Enabling Self-adaptive Memory Management for On-device Online Continual Learning</h2>
+        <div class="card-meta">
+            <span>📅 抓取/发表时间: <strong>2026-05-26</strong></span>
+            <span>🔗 <a href="http://arxiv.org/abs/2605.26473v1" target="_blank">查看 arXiv 官方原文</a></span>
+        </div>
+        <div class="card-analysis">
+            <h3>🔬 Gemini 真实学术解读：</h3>
+            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header-flow">
+            <div class="card-tag">文献 6</div>
+            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+        </div>
+        <h2 class="card-title">Toward Intelligent Prefetching: A Survey on Complex Memory Access Prediction Techniques</h2>
+        <div class="card-meta">
+            <span>📅 抓取/发表时间: <strong>2026-06-08</strong></span>
+            <span>🔗 <a href="http://arxiv.org/abs/2606.09955v1" target="_blank">查看 arXiv 官方原文</a></span>
+        </div>
+        <div class="card-analysis">
+            <h3>🔬 Gemini 真实学术解读：</h3>
+            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header-flow">
+            <div class="card-tag">文献 7</div>
+            <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+        </div>
+        <h2 class="card-title">TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout</h2>
+        <div class="card-meta">
+            <span>📅 抓取/发表时间: <strong>2026-07-04</strong></span>
+            <span>🔗 <a href="http://arxiv.org/abs/2607.04031v1" target="_blank">查看 arXiv 官方原文</a></span>
+        </div>
+        <div class="card-analysis">
+            <h3>🔬 Gemini 真实学术解读：</h3>
+            <p>Gemini 实时解读生成失败: 503 UNAVAILABLE. {'error': {'code': 503, 'message': 'This model is currently experiencing high demand. Spikes in demand are usually temporary. Please try again later.', 'status': 'UNAVAILABLE'}}</p>
+        </div>
+    </div>
+    
     </div>
     <footer>
-        <p>© 2026 Prefetch Paper Agent | 借鉴世界一流学术追踪标准构建</p>
+        <p>© 2026 Prefetch Paper Agent | 借鉴顶级学术智库标准构建</p>
     </footer>
 </body>
 </html>
