@@ -2,8 +2,8 @@ name: Gemini Prefetch Paper Agent Workflow
 
 on:
   schedule:
-    - cron: '30 0 * * *'  # 每天早上北京时间 08:30 自动起床运行
-  workflow_dispatch:      # 支持手动点击按钮测试
+    - cron: '30 0 * * *'  # 每天早上北京时间 08:30 自动唤醒运行
+  workflow_dispatch:      # 允许随时在网页端手动点击运行测试
 
 jobs:
   build:
@@ -27,12 +27,18 @@ jobs:
       run: |
         python main.py
 
-    # 【新增进化步骤】：自动将新生成的 index.html 推送回 GitHub 仓库
-    - name: 自动提交网页并部署
+    - name: 自动同步数据库与静态网页（防冲突版）
       run: |
         git config --local user.email "actions@github.com"
         git config --local user.name "GitHub Actions"
-        git add index.html
-        # 如果网页有更新，就推送到仓库；没有更新就忽略报错
-        git diff --quiet && git diff --staged --quiet || git commit -m "🔄 自动同步最新论文网页 [$(date '+%Y-%m-%d %H:%M:%S')]"
-        git push origin main
+        
+        # 将生成的网页和记忆数据库一起加入暂存区
+        git add index.html paper_database.json
+        
+        if ! git diff --quiet --staged; then
+          git commit -m "🔄 智能同步最新顶会勋章文献 [$(date '+%Y-%m-%d %H:%M:%S')]"
+          git pull --rebase origin main
+          git push origin main
+        else
+          echo "今日全网无符合条件的全新论文，无需更新数据库。"
+        fi
