@@ -1,12 +1,21 @@
 [
   {
+    "title": "ORAP: Optimized Row Access Prefetching for Rowhammer-mitigated Memory",
+    "summary": "Rowhammer is a well-studied DRAM phenomenon wherein multiple activations to a given row can cause bit flips in adjacent rows. Many mitigation techniques have been introduced to address Rowhammer, with some support being incorporated into the JEDEC DDR5 standard for per-row-activation-counter (PRAC) and refresh-management (RFM) systems. Mitigation schemes built on these mechanisms claim to have various levels of area, power, and performance overheads. To date the evaluation of existing mitigation schemes typically neglects the impact of other memory system components such as hardware prefetchers. Nearly all modern systems incorporate hardware prefetching and these can significantly improve processor performance through speculative cache population. These prefetchers induce higher numbers of downstream memory requests and increase DRAM activation rates. The performance overhead of Rowhammer mitigations are tied directly to memory access patterns, exposing both hardware prefetchers and Rowhammer mitigations to cross-interaction. We find that the performance improvement provided by prior-work hardware prefetchers is often severely impacted by Rowhammer mitigations. In effect, much of the benefit of speculative memory references from prefetching lies in accelerating and reordering DRAM references in ways that trigger mitigations, significantly reducing the benefits of prefetching. This work proposes the Optimized Row Access Prefetcher (ORAP), leveraging last-level-cache (LLC) space to cache large portions of DRAM rowbuffer contents to reduce the need for future activations. Working with the state-of-the-art Berti prefetcher, ORAP reduces DRAM activation rates by 51.3% and achieves a 4.6% speedup over the prefetcher configuration of Berti and SPP-PPF when prefetching in an RFM-mitigated memory system. Under PRAC mitigations, ORAP reduces energy overheads by 11.8%.",
+    "url": "http://arxiv.org/abs/2602.13434v1",
+    "date": "2026-02-13",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "专家解读生成失败（触发频控限制）。"
+  },
+  {
     "title": "A Spatio-Temporal Expert Prefetching Framework for Efficient MoE-based LLM Inference",
     "summary": "Mixture-of-Experts (MoE) based large language models (LLMs), such as Qwen and DeepSeek, have recently emerged as an effective approach to improving model capacity without proportionally increasing computational cost. By replacing the conventional feed-forward network in dense LLMs with a set of experts and activating only a subset of them for each input token, MoE models significantly increase the total number of parameters while keeping the per-token computation relatively manageable. However, this dynamic and irregular expert activation pattern also introduces substantial expert loading overhead during inference, since the required experts must be fetched on demand according to token-dependent routing results. As a result, expert loading latency becomes a major source of performance and energy inefficiency. To this end, we first perform a comprehensive analysis of expert selection behavior in various MoE-based LLMs and applications, including language understanding and code generation. Our analysis reveals that, within each application domain, expert requests exhibit strong correlation across both adjacent MoE layers and consecutive decoding tokens, making future expert activations predictable. Based on this insight, we propose ST-MoE, a spatio-temporal expert prefetching framework that proactively stages experts ahead of use to overlap expert loading with ongoing computation. ST-MoE combines a lightweight runtime prediction mechanism that preserves the original routing behavior with a reconfigurable hardware design that efficiently supports dynamic expert prefetching. The combined effect of the prediction mechanism with the supporting hardware significantly improves MoE inference performance and energy efficiency while preserving model inference accuracy.",
     "url": "http://arxiv.org/abs/2606.15453v1",
     "date": "2026-06-13",
     "venue": "📦 arXiv 预印本",
     "is_top": false,
-    "review": "专家解读生成失败（触发频控限制）。"
+    "review": "**<br><br>**1. 核心创新：**"
   },
   {
     "title": "TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout",
