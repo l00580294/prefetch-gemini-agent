@@ -1,22 +1,45 @@
 search_queries:
-  # 收紧检索：锁定处理器、微架构、硬件预取、缓存优化，排除纯网络和安全密码学
-  - 'ti:"hardware prefetch" OR ti:"prefetcher" OR abs:"hardware prefetcher" OR (abs:"cache subsystem" AND abs:"microarchitecture") OR abs:"memory wall"'
+  # 二十年经典流派一网打尽检索式（严格限制在 Title 包含或 Abstract 深度相关）
+  - 'ti:prefetch OR ti:prefetcher OR abs:"hardware prefetcher" OR abs:"spatial memory streaming" OR abs:"pointer chasing" OR abs:"temporal prefetching"'
 
 time_window:
+  # 你之前配置的动态时间裁剪参数（保持6个月）
   months: 6
 
 filter_rules:
+  # 【精准白名单】：涵盖了传统步长、空间关联、时间序列、间接指针、ML预取的所有核心微架构黑话
   include:
     - "prefetch"
-    - "cache"
-    - "memory"
-    - "fetch"
-    - "microarchitecture"
+    - "prefetcher"
+    - "stream buffer"
+    - "stride"
+    - "pointer chasing"
+    - "indirect memory"
+    - "spatial memory streaming"
+    - "global history buffer"
+    - "temporal prefetching"
+    - "lookahead"
+    - "cache-line prediction"
+    - "address correlation"
+    - "fetch unit"
+
+  # 【硬核黑名单】：在 arXiv 初筛阶段，一旦出现这些词，直接熔断、秒级过滤
+  # 彻底解决混入大批 DRAM 介质、FPGA 通用加速、后量子密码学、网络边缘计算的质量滑坡问题
   exclude:
-    - "cellular"
-    - "5g"
-    - "web"
-    - "cdn"
+    - "fpga"
+    - "dram"
+    - "pcm"
+    - "reram"
+    - "flash memory"
+    - "non-volatile"
+    - "hbm"              # 高带宽内存，经常带出大批存储介质噪声
     - "cryptography"
     - "quantum"
     - "security"
+    - "privacy"
+    - "adversarial"
+    - "edge computing"
+    - "cellular"
+    - "5g"
+    - "blockchain"
+    - "compiler optimization" # 排除纯软件编译器预取
