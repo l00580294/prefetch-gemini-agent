@@ -6,7 +6,7 @@ import json
 import yaml
 import urllib.request
 import urllib.parse
-from datetime import datetime, timedelta
+from datetime import datetime
 import xml.etree.ElementTree as ET
 
 # ==========================================
@@ -114,7 +114,6 @@ def fetch_arxiv_papers(queries, max_results=40):
             url_str = entry.find('atom:id', namespace).text.strip()
             published_str = entry.find('atom:published', namespace).text.strip()
             
-            # 格式化发布时间 YYYY-MM-DD
             date_obj = datetime.strptime(published_str[:10], "%Y-%m-%d")
             formatted_date = date_obj.strftime("%Y-%m-%d")
             
@@ -138,7 +137,6 @@ def send_webhook_notification(papers):
         
     print(f"🔔 正在向手机端推送最新捕获的 {len(papers)} 篇硬核论文...")
     for paper in papers:
-        # 🔥 修复核心：将换行符替换操作移出 f-string 表达式内部，彻底平息旧版 Python 的语法恐慌
         clean_review = paper['review'].replace('<br>', '\n')
         
         card_text = (
@@ -158,7 +156,7 @@ def send_webhook_notification(papers):
         data = json.dumps(payload).encode("utf-8")
         headers = {"Content-Type": "application/json"}
         robust_http_request(webhook_url, data=data, headers=headers, method="POST")
-        time.sleep(2) # 推送错峰
+        time.sleep(2)
 
 def render_html_page(papers):
     """无冲突生成 GitHub Pages 大屏幕"""
@@ -232,12 +230,10 @@ def main():
     print("🚀 === 硬件预取器学术特工系统 2.0 启动 ===")
     config = load_config()
     
-    # 动态时间窗裁剪
     months_window = config.get("time_window", {}).get("months", 6)
     current_now = datetime.now()
     cutoff_days = months_window * 30
     
-    # 读取历史持久化记忆库
     historical_data = []
     if os.path.exists("paper_database.json"):
         try:
@@ -246,7 +242,6 @@ def main():
         except:
             historical_data = []
             
-    # 强制清理超出 6 个月的过载历史数据
     historical_data = [
         p for p in historical_data 
         if (current_now - datetime.strptime(p['date'], "%Y-%m-%d")).days <= cutoff_days
@@ -254,53 +249,46 @@ def main():
     
     valid_existing_urls = {p['url'] for p in historical_data if "专家解读生成失败" not in p.get('review', '')}
     
-    # 启动 arXiv 海选
     raw_papers = fetch_arxiv_papers(config["search_queries"], max_results=40)
     
     api_key = os.getenv("LLM_API_KEY")
     filtered_new_papers = []
     
     if raw_papers and api_key:
-        # 逆向顶会认证白名单
         TOP_VENUES = ["isca", "micro", "hpca", "asplos", "ieee tc", "taco", "cal", "sigmetrics"]
         
         for paper in raw_papers:
             if paper['url'] in valid_existing_urls:
                 continue
                 
-            # 清理数据库里因上轮 429 失败的相同 URL
             historical_data = [p for p in historical_data if p['url'] != paper['url']]
             
-            # ==========================================
-            # 🔒【纯粹主义硬防线：物理拦截，略过摘要】
-            # ==========================================
             title_lower = paper['title'].lower()
             summary_lower = paper['summary'].lower()
             
-            # 1. 标题硬阻断：标题不包含 prefetch，直接就地正法
-            if "prefetch" not in title_lower:
+            # =======================================================
+            # 🛡️【硬过滤核心重组：Include 优先拦截 -> Exclude 绝对熔断】
+            # =======================================================
+            
+            # 1. 优先判断 Include 内容：标题不含任何核心白名单词，直接出局
+            if not any(inc in title_lower for inc in config["filter_rules"]["include"]):
                 print(f"⏩ [物理硬拦截] 标题未直接包含 prefetch，安全跳过: {paper['title'][:50]}...")
                 continue
                 
-            # 2. 干扰词深度熔断
-            if any(x in title_lower or x in summary_lower for x in config["filter_rules"]["exclude"]):
-                print(f"⏩ [黑名单拦截] 发现非纯粹微架构预取噪声: {paper['title'][:50]}...")
+            # 2. 继而判断 Exclude 内容：一旦标题或摘要包含黑名单词，立刻一刀切熔断
+            if any(exc in title_lower or exc in summary_lower for exc in config["filter_rules"]["exclude"]):
+                print(f"⏩ [黑名单拦截] 确定含有黑名单干扰内容，物理过滤: {paper['title'][:50]}...")
                 continue
                 
-            # 3. 历史时间二次核准
             if (current_now - datetime.strptime(paper['date'], "%Y-%m-%d")).days > cutoff_days:
                 continue
 
             print(f"🧠 钢铁审查文献: {paper['title'][:60]}...")
-            
-            # ==========================================
-            # ⏱️【防 429 机制】：错峰基础冷却 8 秒
-            # ==========================================
             time.sleep(8)
 
-            # 第一阶段 - AI 智能语义精筛
+            # 第一阶段 - AI 智能语义精筛（聚焦处理器核心与微架构层级）
             judge_prompt = (
-                f"你是一个处理器微架构方向的冷酷审稿人。\n"
+                f"你是一个体系结构微架构方向的冷酷审稿人。\n"
                 f"请严格帮我判断：这篇论文的核心贡献是否属于【处理器硬件预取器（Hardware Prefetcher）架构设计、预取算法优化、或取指单元（Fetch Unit）改进】？\n"
                 f"只有当论文确实在设计、改进或评测硬件预取器本身时，才回答【是】。其他擦边、应用层、或纯存储器介质的研究一律回答【否】。\n"
                 f"请严格只回答【是】或【否】，不要包含任何其他多余的字。\n\n"
@@ -336,13 +324,12 @@ def main():
             except:
                 pass
 
-            # 为连续的第二次大模型请求提供 4 秒喘息窗口
             time.sleep(4)
 
             # 第三阶段 - 顶尖科学家同行评审意见输出
             review_prompt = (
                 f"你是一个精通计算机体系结构、微架构和存储子系统的顶级科学家。\n"
-                f"请认真阅读以下硬件预取相关论文的标题 and 摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
+                f"请认真阅读以下硬件预取相关论文的标题和摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
                 f"要求用中文，分为两部分回答（总字数控制在150字以内）：\n"
                 f"1. 核心创新：阐明其相较于传统预取器在微架构设计或算法上的核心突破点。\n"
                 f"2. 潜在价值：分析该方法对缓解存储墙或提升特定负载（如图计算、大模型推理）的实际工业价值。\n\n"
@@ -363,17 +350,12 @@ def main():
             historical_data.insert(0, paper)
             filtered_new_papers.append(paper)
 
-    # 按时间由新到旧排序
     historical_data.sort(key=lambda x: x['date'], reverse=True)
-    
-    # 限制总数据库最大持久化卡片数
     historical_data = historical_data[:35]
     
-    # 持久化更新
     with open("paper_database.json", "w", encoding="utf-8") as f:
         json.dump(historical_data, f, ensure_ascii=False, indent=2)
         
-    # 生成网页大屏与主动推送
     render_html_page(historical_data)
     send_webhook_notification(filtered_new_papers)
     print("🏁 === 本轮自动追踪学术雷达已安全闭环 ===")
