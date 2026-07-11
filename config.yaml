@@ -13,6 +13,7 @@ filter_rules:
   exclude:
     - "fpga"
     - "dram"
+    - "hbm"
     - "pcm"
     - "reram"
     - "cryptography"
