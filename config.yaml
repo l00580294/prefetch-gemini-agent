@@ -1,6 +1,6 @@
 search_queries:
   # 彻底丢弃 abs。只在标题(ti)和关键词(key)中匹配预取核心词，以最高冷的姿态隔绝杂质
-  - 'ti:prefetch OR ti:prefetcher OR key:prefetch OR key:prefetcher OR key:pointer chasing OR key:temporal prefetching'
+  - 'ti:prefetch OR ti:prefetcher OR key:prefetch OR key:prefetcher'
 
 time_window:
   months: 6
@@ -9,13 +9,10 @@ filter_rules:
   include:
     - "prefetch"
     - "prefetcher"
-    - "pointer chasing"
   exclude:
     - "fpga"
     - "dram"
-    - "hbm"
     - "pcm"
     - "reram"
     - "cryptography"
     - "security"
-    - "quantum"
