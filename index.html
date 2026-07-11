@@ -1,174 +1,140 @@
 <!DOCTYPE html>
-    <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>处理器预取算法文献追踪大屏</title>
-        <style>
-            :root { --bg: #f8fafc; --text: #1e293b; --primary: #2563eb; --card-bg: #ffffff; }
-            body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 0; line-height: 1.6; }
-            .header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; text-align: center; padding: 45px 20px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
-            .header h1 { margin: 0; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.05em; }
-            .header p { margin: 10px 0 0 0; opacity: 0.9; font-size: 1rem; }
-            .container { max-width: 900px; margin: 30px auto; padding: 0 20px; }
-            .card { background: var(--card-bg); border-radius: 16px; padding: 28px; margin-bottom: 25px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; transition: transform 0.2s; }
-            .card:hover { transform: translateY(-2px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-            .card-header-flow { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-            .card-tag { display: inline-block; background: #f1f5f9; color: #475569; font-weight: 700; padding: 4px 12px; border-radius: 9999px; font-size: 0.85rem; }
-            .badge { padding: 6px 14px; border-radius: 9999px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-            .badge-top { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
-            .badge-normal { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; }
-            .badge-arxiv { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; }
-            .card-title { font-size: 1.4rem; margin: 0 0 15px 0; font-weight: 700; color: #0f172a; line-height: 1.3; }
-            .card-meta { font-size: 0.9rem; color: #64748b; margin-bottom: 20px; display: flex; gap: 20px; border-bottom: 1px solid #f1f5f9; padding-bottom: 12px; }
-            .card-meta a { color: var(--primary); text-decoration: none; font-weight: 600; }
-            .card-meta a:hover { text-decoration: underline; }
-            .card-analysis { background: #f0fdf4; border-left: 4px solid #22c55e; padding: 18px 20px; border-radius: 0 12px 12px 0; }
-            .card-analysis h3 { margin: 0 0 8px 0; font-size: 1.05rem; color: #166534; font-weight: 700; }
-            .card-analysis p { margin: 0; color: #14532d; font-size: 0.98rem; text-align: justify; }
-            footer { text-align: center; padding: 40px; color: #94a3b8; font-size: 0.85rem; }
-        </style>
-    </head>
-    <body>
-        <div class="header">
-            <h1>🚀 处理器预取算法文献追踪大屏</h1>
-            <p>已锁定期限：仅呈现近 6 个月内发表的硬核前沿技术</p>
-            <p style="font-size: 0.85rem; margin-top: 15px; opacity: 0.7;">🔄 大屏同步更新时间：2026-07-10 05:46:50 (北京时间)</p>
-        </div>
-        <div class="container">
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>硬件预取器 (Hardware Prefetcher) 前沿学术雷达</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #f4f6f9; color: #333; margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #e1e4e8; padding-bottom: 20px; }
+        h1 { color: #1a202c; margin-bottom: 5px; }
+        .subtitle { color: #718096; font-size: 0.95rem; }
+        .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); padding: 20px; margin-bottom: 20px; border-left: 5px solid #4a5568; transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
+        .card.top-tier { border-left-color: #d69e2e; background-color: #fffdf5; }
+        .meta-row { display: flex; justify-content: space-between; font-size: 0.85rem; color: #718096; margin-bottom: 12px; font-weight: 500; }
+        .venue { padding: 2px 8px; border-radius: 4px; background: #e2e8f0; color: #4a5568; }
+        .card.top-tier .venue { background: #feebc8; color: #c05621; }
+        .title { font-size: 1.25rem; font-weight: 700; color: #2d3748; margin-bottom: 12px; text-decoration: none; display: inline-block; }
+        .title:hover { color: #3182ce; }
+        .review-box { background: #f7fafc; border-radius: 6px; padding: 15px; border: 1px dashed #e2e8f0; font-size: 0.92rem; line-height: 1.6; color: #2d3748; }
+        .card.top-tier .review-box { background: #fffaf0; border-color: #fbd38d; }
+        .tag { font-weight: bold; color: #4a5568; display: block; margin-bottom: 4px; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📡 硬件预取器前沿学术雷达</h1>
+            <div class="subtitle">只关注微架构预取设计与算法优化 | 物理级标题硬过滤机制 | 自动更新时间：2026-07-11 02:29:09</div>
+        </header>
+        <main>
             
-        <div class="card">
-            <div class="card-header-flow">
-                <div class="card-tag">文献 1</div>
-                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+        <div class="card ">
+            <div class="meta-row">
+                <span>📅 发表日期: 2026-07-04</span>
+                <span class="venue">📦 arXiv 预印本</span>
             </div>
-            <h2 class="card-title">ORAP: Optimized Row Access Prefetching for Rowhammer-mitigated Memory</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-02-13</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2602.13434v1" target="_blank">查看 arXiv 官方原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>🔬 AI 真实学术解读：</h3>
-                <p>专家解读生成失败（触发频控限制）。</p>
+            <a class="title" href="http://arxiv.org/abs/2607.04031v1" target="_blank">TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout</a>
+            <div class="review-box">
+                <span class="tag">💡 专家学术解读：</span>
+                1. 核心创新：TileLens通过引入“瓦
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-header-flow">
-                <div class="card-tag">文献 2</div>
-                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+
+        <div class="card ">
+            <div class="meta-row">
+                <span>📅 发表日期: 2026-06-18</span>
+                <span class="venue">📦 arXiv 预印本</span>
             </div>
-            <h2 class="card-title">A Spatio-Temporal Expert Prefetching Framework for Efficient MoE-based LLM Inference</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-06-13</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2606.15453v1" target="_blank">查看 arXiv 官方原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>🔬 AI 真实学术解读：</h3>
-                <p>**<br><br>**1. 核心创新：**</p>
+            <a class="title" href="http://arxiv.org/abs/2606.20543v1" target="_blank">SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation</a>
+            <div class="review-box">
+                <span class="tag">💡 专家学术解读：</span>
+                专家解读生成失败（触发频控限制）。
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-header-flow">
-                <div class="card-tag">文献 3</div>
-                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+
+        <div class="card ">
+            <div class="meta-row">
+                <span>📅 发表日期: 2026-06-13</span>
+                <span class="venue">📦 arXiv 预印本</span>
             </div>
-            <h2 class="card-title">TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-07-04</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2607.04031v1" target="_blank">查看 arXiv 官方原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>🔬 AI 真实学术解读：</h3>
-                <p>1. 核心创新：TileLens通过引入“瓦</p>
+            <a class="title" href="http://arxiv.org/abs/2606.15453v1" target="_blank">A Spatio-Temporal Expert Prefetching Framework for Efficient MoE-based LLM Inference</a>
+            <div class="review-box">
+                <span class="tag">💡 专家学术解读：</span>
+                **<br><br>**1. 核心创新：**
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-header-flow">
-                <div class="card-tag">文献 4</div>
-                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+
+        <div class="card ">
+            <div class="meta-row">
+                <span>📅 发表日期: 2026-05-18</span>
+                <span class="venue">📦 arXiv 预印本</span>
             </div>
-            <h2 class="card-title">Shifting in-DRAM</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-02-27</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2602.24269v1" target="_blank">查看 arXiv 官方原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>🔬 AI 真实学术解读：</h3>
-                <p>专家解读生成失败（触发频控限制）。</p>
+            <a class="title" href="http://arxiv.org/abs/2605.18003v1" target="_blank">Spiker-LL: An Energy-Efficient FPGA Accelerator Enabling Adaptive Local Learning in Spiking Neural Networks</a>
+            <div class="review-box">
+                <span class="tag">💡 专家学术解读：</span>
+                专家解读临时生成失败。
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-header-flow">
-                <div class="card-tag">文献 5</div>
-                <span class="badge badge-normal">📝 已发表至: arXiv.org</span>
+
+        <div class="card ">
+            <div class="meta-row">
+                <span>📅 发表日期: 2026-05-08</span>
+                <span class="venue">📦 arXiv 预印本</span>
             </div>
-            <h2 class="card-title">Accelerating OpenPangu Inference on NPU via Speculative Decoding</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-03-03</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2603.03383v1" target="_blank">查看 arXiv 官方原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>🔬 AI 真实学术解读：</h3>
-                <p>专家解读生成失败（触发频控限制）。</p>
+            <a class="title" href="http://arxiv.org/abs/2605.07954v1" target="_blank">Stencil Computations on Cerebras Wafer-Scale Engine</a>
+            <div class="review-box">
+                <span class="tag">💡 专家学术解读：</span>
+                专家解读生成失败（触发频控限制）。
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-header-flow">
-                <div class="card-tag">文献 6</div>
-                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+
+        <div class="card ">
+            <div class="meta-row">
+                <span>📅 发表日期: 2026-03-03</span>
+                <span class="venue">📝 已发表至: arXiv.org</span>
             </div>
-            <h2 class="card-title">Stencil Computations on Cerebras Wafer-Scale Engine</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-05-08</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2605.07954v1" target="_blank">查看 arXiv 官方原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>🔬 AI 真实学术解读：</h3>
-                <p>专家解读生成失败（触发频控限制）。</p>
+            <a class="title" href="http://arxiv.org/abs/2603.03383v1" target="_blank">Accelerating OpenPangu Inference on NPU via Speculative Decoding</a>
+            <div class="review-box">
+                <span class="tag">💡 专家学术解读：</span>
+                专家解读生成失败（触发频控限制）。
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-header-flow">
-                <div class="card-tag">文献 7</div>
-                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+
+        <div class="card ">
+            <div class="meta-row">
+                <span>📅 发表日期: 2026-02-27</span>
+                <span class="venue">📦 arXiv 预印本</span>
             </div>
-            <h2 class="card-title">SSD: Spatially Speculative Decoding Accelerates Autoregressive Image Generation</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-06-18</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2606.20543v1" target="_blank">查看 arXiv 官方原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>🔬 AI 真实学术解读：</h3>
-                <p>专家解读生成失败（触发频控限制）。</p>
+            <a class="title" href="http://arxiv.org/abs/2602.24269v1" target="_blank">Shifting in-DRAM</a>
+            <div class="review-box">
+                <span class="tag">💡 专家学术解读：</span>
+                专家解读生成失败（触发频控限制）。
             </div>
         </div>
         
-        <div class="card">
-            <div class="card-header-flow">
-                <div class="card-tag">文献 8</div>
-                <span class="badge badge-arxiv">📦 arXiv 预印本</span>
+
+        <div class="card ">
+            <div class="meta-row">
+                <span>📅 发表日期: 2026-02-13</span>
+                <span class="venue">📦 arXiv 预印本</span>
             </div>
-            <h2 class="card-title">Spiker-LL: An Energy-Efficient FPGA Accelerator Enabling Adaptive Local Learning in Spiking Neural Networks</h2>
-            <div class="card-meta">
-                <span>📅 发表时间: <strong>2026-05-18</strong></span>
-                <span>🔗 <a href="http://arxiv.org/abs/2605.18003v1" target="_blank">查看 arXiv 官方原文</a></span>
-            </div>
-            <div class="card-analysis">
-                <h3>🔬 AI 真实学术解读：</h3>
-                <p>专家解读临时生成失败。</p>
+            <a class="title" href="http://arxiv.org/abs/2602.13434v1" target="_blank">ORAP: Optimized Row Access Prefetching for Rowhammer-mitigated Memory</a>
+            <div class="review-box">
+                <span class="tag">💡 专家学术解读：</span>
+                专家解读生成失败（触发频控限制）。
             </div>
         </div>
         
-        </div>
-        <footer>
-            <p>© 2026 Prefetch Paper Agent | 借鉴顶级学术智库标准构建</p>
-        </footer>
-    </body>
-    </html>
-    
+        </main>
+    </div>
+</body>
+</html>
