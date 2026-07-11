@@ -28,7 +28,7 @@ def load_config():
             with open("config.yaml", "r", encoding="utf-8") as f:
                 return yaml.safe_load(f)
         except Exception as e:
-            print(f"⚠️ 读取 config.yaml 失败，使用系统内置兜底配置. 原因: {e}")
+            print(f"⚠️ 读取 config.yaml 失败，使用 system 内置兜底配置. 原因: {e}")
     return DEFAULT_CONFIG
 
 def robust_http_request(url, data=None, headers=None, method="GET", retries=3, timeout=15):
@@ -131,19 +131,22 @@ def fetch_arxiv_papers(queries, max_results=40):
         return []
 
 def send_webhook_notification(papers):
-    """如果配置了飞书/钉钉 webhook，自动发送动态推送"""
+    """如果配置了系统 webhook，自动发送动态推送"""
     webhook_url = os.getenv("SYS_WEBHOOK_URL")
     if not webhook_url or not papers:
         return
         
     print(f"🔔 正在向手机端推送最新捕获的 {len(papers)} 篇硬核论文...")
     for paper in papers:
+        # 🔥 修复核心：将换行符替换操作移出 f-string 表达式内部，彻底平息旧版 Python 的语法恐慌
+        clean_review = paper['review'].replace('<br>', '\n')
+        
         card_text = (
             f"👑 发现微架构硬件预取前沿论文！\n\n"
             f"📄 标题: {paper['title']}\n"
             f"📅 时间: {paper['date']}\n"
             f"🏅 认证: {paper['venue']}\n\n"
-            f"🧠 专家解读:\n{paper['review'].replace('<br>', '\n')}\n\n"
+            f"🧠 专家解读:\n{clean_review}\n\n"
             f"🔗 链接: {paper['url']}"
         )
         
@@ -152,7 +155,6 @@ def send_webhook_notification(papers):
             "content": {"text": card_text}
         }
         
-        # 兼容钉钉和飞书的极简结构
         data = json.dumps(payload).encode("utf-8")
         headers = {"Content-Type": "application/json"}
         robust_http_request(webhook_url, data=data, headers=headers, method="POST")
@@ -230,7 +232,7 @@ def main():
     print("🚀 === 硬件预取器学术特工系统 2.0 启动 ===")
     config = load_config()
     
-    # 动态时间窗裁剪（超越第一版）
+    # 动态时间窗裁剪
     months_window = config.get("time_window", {}).get("months", 6)
     current_now = datetime.now()
     cutoff_days = months_window * 30
@@ -244,7 +246,7 @@ def main():
         except:
             historical_data = []
             
-    # 强制清理超出 6 个月的过载历史数据，保持大屏新鲜度与高密度
+    # 强制清理超出 6 个月的过载历史数据
     historical_data = [
         p for p in historical_data 
         if (current_now - datetime.strptime(p['date'], "%Y-%m-%d")).days <= cutoff_days
@@ -266,7 +268,7 @@ def main():
             if paper['url'] in valid_existing_urls:
                 continue
                 
-            # 清理数据库里因上轮 429 失败的相同 URL，准备重新自愈解读
+            # 清理数据库里因上轮 429 失败的相同 URL
             historical_data = [p for p in historical_data if p['url'] != paper['url']]
             
             # ==========================================
@@ -275,12 +277,12 @@ def main():
             title_lower = paper['title'].lower()
             summary_lower = paper['summary'].lower()
             
-            # 1. 标题硬阻断：第一版准的核心。标题不包含 prefetch，直接就地正法
+            # 1. 标题硬阻断：标题不包含 prefetch，直接就地正法
             if "prefetch" not in title_lower:
                 print(f"⏩ [物理硬拦截] 标题未直接包含 prefetch，安全跳过: {paper['title'][:50]}...")
                 continue
                 
-            # 2. 干扰词深度熔断：只要标题或摘要蹭了DRAM、FPGA或安全侧信道的热度，立刻秒级剥离
+            # 2. 干扰词深度熔断
             if any(x in title_lower or x in summary_lower for x in config["filter_rules"]["exclude"]):
                 print(f"⏩ [黑名单拦截] 发现非纯粹微架构预取噪声: {paper['title'][:50]}...")
                 continue
@@ -293,7 +295,6 @@ def main():
             
             # ==========================================
             # ⏱️【防 429 机制】：错峰基础冷却 8 秒
-            # 极大平滑 Token 消耗曲线，杜绝高频密集请求引发的接口崩溃
             # ==========================================
             time.sleep(8)
 
@@ -341,7 +342,7 @@ def main():
             # 第三阶段 - 顶尖科学家同行评审意见输出
             review_prompt = (
                 f"你是一个精通计算机体系结构、微架构和存储子系统的顶级科学家。\n"
-                f"请认真阅读以下硬件预取相关论文的标题和摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
+                f"请认真阅读以下硬件预取相关论文的标题 and 摘要，为其撰写一条真实、客观、严谨且高屋建瓴的【专家解读】。\n"
                 f"要求用中文，分为两部分回答（总字数控制在150字以内）：\n"
                 f"1. 核心创新：阐明其相较于传统预取器在微架构设计或算法上的核心突破点。\n"
                 f"2. 潜在价值：分析该方法对缓解存储墙或提升特定负载（如图计算、大模型推理）的实际工业价值。\n\n"
@@ -365,7 +366,7 @@ def main():
     # 按时间由新到旧排序
     historical_data.sort(key=lambda x: x['date'], reverse=True)
     
-    # 限制总数据库最大持久化卡片数（大屏滚动更新机制）
+    # 限制总数据库最大持久化卡片数
     historical_data = historical_data[:35]
     
     # 持久化更新
