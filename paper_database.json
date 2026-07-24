@@ -97,14 +97,5 @@
     "venue": "📦 arXiv 预印本",
     "is_top": false,
     "review": "【专家解读】<br><br>1.  **核心创新"
-  },
-  {
-    "title": "Athena: Synergizing Data Prefetching and Off-Chip Prediction via Online Reinforcement Learning",
-    "summary": "Prefetching and off-chip prediction are two techniques proposed to hide long memory access latencies in high-performance processors. In this work, we demonstrate that: (1) prefetching and off-chip prediction often provide complementary performance benefits, yet (2) naively combining them often fails to realize their full performance potential, and (3) existing prefetcher control policies leave significant room for performance improvement behind. Our goal is to design a holistic framework that can autonomously learn to coordinate an off-chip predictor with multiple prefetchers employed at various cache levels. To this end, we propose a new technique called Athena, which models the coordination between prefetchers and off-chip predictor (OCP) as a reinforcement learning (RL) problem. Athena acts as the RL agent that observes multiple system-level features (e.g., prefetcher/OCP accuracy, bandwidth usage) over an epoch of program execution, and uses them as state information to select a coordination action (i.e., enabling the prefetcher and/or OCP, and adjusting prefetcher aggressiveness). At the end of every epoch, Athena receives a numerical reward that measures the change in multiple system-level metrics (e.g., number of cycles taken to execute an epoch). Athena uses this reward to autonomously and continuously learn a policy to coordinate prefetchers with OCP. Our extensive evaluation using a diverse set of memory-intensive workloads shows that Athena consistently outperforms prior state-of-the-art coordination policies across a wide range of system configurations with various combinations of underlying prefetchers, OCPs, and main memory bandwidths, while incurring only modest storage overhead. Athena is freely available at https://github.com/CMU-SAFARI/Athena.",
-    "url": "http://arxiv.org/abs/2601.17615v1",
-    "date": "2026-01-24",
-    "venue": "📝 已发表至: International Symposium on High-Performance Computer Architecture",
-    "is_top": false,
-    "review": "【专家解读】<br><br>1.  **核心"
   }
 ]
