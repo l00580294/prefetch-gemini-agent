@@ -88,14 +88,5 @@
     "venue": "📦 arXiv 预印本",
     "is_top": false,
     "review": "**1. 核心创新：**<br>SPPAM融合"
-  },
-  {
-    "title": "SpecMD: A Comprehensive Study On Speculative Expert Prefetching",
-    "summary": "Mixture-of-Experts (MoE) models enable sparse expert activation, meaning that only a subset of the model's parameters is used during each inference. However, to translate this sparsity into practical performance, an expert caching mechanism is required. Previous works have proposed hardware-centric caching policies, but how these various caching policies interact with each other and different hardware specification remains poorly understood. To address this gap, we develop \\textbf{SpecMD}, a standardized framework for benchmarking ad-hoc cache policies on various hardware configurations. Using SpecMD, we perform an exhaustive benchmarking of several MoE caching strategies, reproducing and extending prior approaches in controlled settings with realistic constraints. Our experiments reveal that MoE expert access is not consistent with temporal locality assumptions (e.g LRU, LFU). Motivated by this observation, we propose \\textbf{Least-Stale}, a novel eviction policy that exploits MoE's predictable expert access patterns to reduce collision misses by up to $85\\times$ over LRU. With such gains, we achieve over $88\\%$ hit rates with up to $34.7\\%$ Time-to-first-token (TTFT) reduction on OLMoE at only $5\\%$ or $0.6GB$ of VRAM cache capacity.",
-    "url": "http://arxiv.org/abs/2602.03921v1",
-    "date": "2026-02-03",
-    "venue": "📦 arXiv 预印本",
-    "is_top": false,
-    "review": "【专家解读】<br><br>1.  **核心创新"
   }
 ]
