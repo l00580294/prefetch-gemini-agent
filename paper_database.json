@@ -1,5 +1,14 @@
 [
   {
+    "title": "Themis: Software-Defined Hardware Prefetching",
+    "summary": "Data cache misses represent a significant portion of stall cycles in datacenter workloads. Hardware prefetchers that reduce such stalls by fetching data ahead of time have become increasingly sophisticated. However, to achieve high coverage, they have to prefetch aggressively, generating many inaccurate accesses that waste memory bandwidth. This is problematic in datacenter environments where memory bandwidth is a limited resource due to high multi-tenancy. We observe that for datacenter workloads, inaccurate prefetches can be effectively filtered on a data page granularity, without sacrificing prefetch coverage. However, storing per-page metadata about prefetch usefulness in hardware is costly, so we propose a novel hardware-software interface for data prefetching: The software directs the hardware on where to prefetch, and the hardware identifies and issues prefetches in the regions of interest. We propose Themis, a profile-guided hardware prefetching solution that implements this new interface. Themis utilizes page-level hints stored in page-table entries to disable the prefetcher for certain data pages at runtime. Themis requires no binary or ISA changes and can be used to optimize processes without disrupting their execution. Themis is also orthogonal to existing works on prefetching and can be applied to optimize any hardware prefetcher. Our results show that Themis is able to achieve around 40% reduction in useless prefetch requests, resulting in speedup for all the evaluated prefetchers for datacenter workloads, including 4.1% for BOP, 3.1% for SPP+PPF, and 1.4% for Pythia.",
+    "url": "http://arxiv.org/abs/2608.00259v1",
+    "date": "2026-07-31",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "【专家解读】<br><br>1.  **"
+  },
+  {
     "title": "TileLens: Efficiently Using Large-Granularity Memory Systems with Transparent Two-Dimensional Memory Layout",
     "summary": "Large Language Model (LLM) inference is bottlenecked by the capacity and bandwidth of GPU High-Bandwidth Memory (HBM). Recent proposals, such as High-Bandwidth Flash (HBF) and RoMe, offer higher capacity or bandwidth than HBM, but require a minimum access granularity of kilobytes. We show that these Large-Granularity Memory Systems (LGMS) can degrade the performance of tiled matrix-multiplication, which is the dominant operation in LLM inference, by up to an order of magnitude. The root cause of the slowdown is read amplification, where memory requests fetch far more data than the tile actually needs. This waste stems from a fundamental mismatch between the two-dimensional nature of compute tiles and the one-dimensional memory layout, leading to each request spilling well beyond the tile boundaries.   To mitigate read amplification, we propose to use tile-major layout for LGMS. Rather than storing data as a one-dimensional strip, tile-major layout reshapes each contiguous memory block into a two-dimensional rectangle, aligning memory granularity with tile boundaries. To ease the adoption of tile-major layout on GPUs, we propose TileLens, lightweight software and hardware extensions that collectively cover major classes of GPU kernels. TileLens-SW extends GPU DSLs so that DSL-based kernels can adopt tile-major in global memory by changing only the layout descriptor. TileLens-HW extends the Tensor Memory Accelerator (TMA) for transparent tile-major support in TMA-based kernels without code changes. We evaluate TileLens on a cycle-level simulator using matrix-multiplication kernels from Qwen-3 30B and Llama-3.1 70B. Combining a tile-major layout with an adaptive hardware prefetcher, TileLens achieves near-HBM performance on HBF-augmented GPUs with a 5us HBF NAND read latency, reducing the geomean slowdown from 1.61-6.49x with conventional layouts to within 1% of an HBM-only baseline.",
     "url": "http://arxiv.org/abs/2607.04031v1",
@@ -79,14 +88,5 @@
     "venue": "📦 arXiv 预印本",
     "is_top": false,
     "review": "专家解读生成失败（触发频控限制）。"
-  },
-  {
-    "title": "SPPAM: Signature Pattern Prediction and Access-Map Prefetcher",
-    "summary": "The discrepancy between processor speed and memory system performance continues to limit the performance of many workloads. To address the issue, one effective and well studied technique is cache prefetching. Many prefetching designs have been proposed, with varying approaches and effectiveness. For example, SPP is a popular prefetcher that leverages confidence throttled recursion to speculate on the future path of program's references, however it is very susceptible to the reference reordering of higher-level caches and the out-of-order core. Orthogonally, AMPM is another popular approach to prefetching which uses reordering-resistant access maps to identify patterns within a region, but is unable to speculate beyond that region. In this paper, we propose SPPAM, a new approach to prefetching, inspired by prior works such as SPP and AMPM, while addressing their limitations. SPPAM utilizes online-learning to build a set of access-map patterns. These patterns are used in a speculative lookahead which is throttled by a confidence metric. Targeting the second-level cache, SPPAM alongside state-of-the-art prefetchers Berti and Bingo improves system performance by 31.4% over no prefetching and 6.2% over the baseline of Berti and Pythia.",
-    "url": "http://arxiv.org/abs/2602.04100v2",
-    "date": "2026-02-04",
-    "venue": "📦 arXiv 预印本",
-    "is_top": false,
-    "review": "**1. 核心创新：**<br>SPPAM融合"
   }
 ]
