@@ -1,5 +1,14 @@
 [
   {
+    "title": "ArchAgent v2: A Case Study with the Data Prefetching Championship",
+    "summary": "Agentic artificial intelligence has shown great promise in automating algorithm design, but scaling similar techniques to computer microarchitecture discovery remains challenging due to vast search spaces, strict hardware budgets, and long simulation times. In this work, we present ArchAgent v2, a framework which scales automated microarchitecture search to multi-level data prefetching. While the original ArchAgent successfully discovered single-level cache replacement policies in competition settings, it does not scale to multi-level prefetching where the design space and degrees of freedom are larger. To overcome this, we introduce two new additions to ArchAgent: a cascaded evolutionary search that subdivides the design space by sequentially evolving and freezing prefetchers at individual cache levels, and a hardware-realizability feedback loop that embeds real-time size-estimation directly into the evolution process. Evaluated under identical rules of the 4th Data Prefetching Championship (DPC4), ArchAgent v2 automatically designs a three-level prefetcher that outperforms the winning hand-designed solution, further demonstrating automated agentic discovery as a useful tool for computer architects. Our discovered policy achieves a 3.8\\% geometric mean IPC speedup over the baseline overall and a 0.3\\% improvement over the prior champion, BertiGO. On low-bandwidth single-core configurations, our policy yields a 4.6\\% performance speedup compared to only 2.6\\% for BertiGO. However, multi-core evolution still remains a significant challenge due to simulation latency impeding evolution speed. Finally, our profiling of an ArchAgent evolution of over 12,000 candidate designs provides key insights into how automated evolutionary agents explore and synthesize complex microarchitectural logic.",
+    "url": "http://arxiv.org/abs/2608.09874v1",
+    "date": "2026-08-10",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "**1. 核心创新**<br>ArchAgent v2"
+  },
+  {
     "title": "OasisKV: Scaling In-Decode KV Cache Beyond HBM with Lookahead Sparse Prefetching",
     "summary": "Large language model (LLM) inference serving is increasingly constrained by memory rather than compute. As long-context and long-form reasoning workloads become more prevalent, the key-value (KV) cache dominates both memory footprint and memory traffic during LLM token generation, i.e., decode. In particular, HBM capacity has become a scarce and costly resource that heavily limits inference batch size and system throughput. This paper presents OasisKV, a memory-centric LLM inference system design that alleviates HBM capacity pressure by decoupling full KV-cache storage from HBM during LLM decoding. Because decode-time attention is naturally sparse, OasisKV keeps only the KV entries of the most relevant tokens in HBMs for attention computation. We observe that future important tokens can be predicted accurately in advance using lookahead tokens drafted by speculative decoding (SD). OasisKV employs an efficient attention background pipeline to identify important KV blocks. They are then prefetched from higher-capacity memory tiers (e.g., host or remote memory) and staged in HBMs before being used in the next decode step. We implement OasisKV based on vLLM. The lookahead prediction is accurate enough to keep accuracy within 0.7 points of full attention under a 2,048-token KV budget. This lets OasisKV turn sparsity into throughput gain: $1.69\\times$ over dense vLLM on the reasoning workload at 0.1 points of accuracy loss, and up to $2.1\\times$ on multi-GPU long-context serving. Under prefill--decode disaggregation, OasisKV reaches about $2\\times$ dense throughput while admitting each request with $6.5$--$9.7\\times$ less KV and holding $2.2$-$2.6$ less decode-node host memory than full KV transfer.",
     "url": "http://arxiv.org/abs/2608.08097v1",
@@ -7,6 +16,15 @@
     "venue": "📦 arXiv 预印本",
     "is_top": false,
     "review": "1.  **核心创新：** OasisKV通过"
+  },
+  {
+    "title": "Themis: Software-Defined Hardware Prefetching",
+    "summary": "Data cache misses represent a significant portion of stall cycles in datacenter workloads. Hardware prefetchers that reduce such stalls by fetching data ahead of time have become increasingly sophisticated. However, to achieve high coverage, they have to prefetch aggressively, generating many inaccurate accesses that waste memory bandwidth. This is problematic in datacenter environments where memory bandwidth is a limited resource due to high multi-tenancy. We observe that for datacenter workloads, inaccurate prefetches can be effectively filtered on a data page granularity, without sacrificing prefetch coverage. However, storing per-page metadata about prefetch usefulness in hardware is costly, so we propose a novel hardware-software interface for data prefetching: The software directs the hardware on where to prefetch, and the hardware identifies and issues prefetches in the regions of interest. We propose Themis, a profile-guided hardware prefetching solution that implements this new interface. Themis utilizes page-level hints stored in page-table entries to disable the prefetcher for certain data pages at runtime. Themis requires no binary or ISA changes and can be used to optimize processes without disrupting their execution. Themis is also orthogonal to existing works on prefetching and can be applied to optimize any hardware prefetcher. Our results show that Themis is able to achieve around 40% reduction in useless prefetch requests, resulting in speedup for all the evaluated prefetchers for datacenter workloads, including 4.1% for BOP, 3.1% for SPP+PPF, and 1.4% for Pythia.",
+    "url": "http://arxiv.org/abs/2608.00259v2",
+    "date": "2026-07-31",
+    "venue": "📦 arXiv 预印本",
+    "is_top": false,
+    "review": "【专家解读】<br><br>1.  **"
   },
   {
     "title": "Themis: Software-Defined Hardware Prefetching",
