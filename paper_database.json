@@ -124,14 +124,5 @@
     "venue": "📝 已发表至: arXiv.org",
     "is_top": false,
     "review": "专家解读生成失败（触发频控限制）。"
-  },
-  {
-    "title": "Shifting in-DRAM",
-    "summary": "Processing-in-Memory (PIM) architectures enable computation directly within DRAM and help combat the memory wall problem. Bit-shifting is a fundamental operation that enables PIM applications such as shift-and-add multiplication, adders using carry propagation, and Galois field arithmetic used in cryptography algorithms like AES and Reed-Solomon error correction codes. Existing approaches to in-DRAM shifting require adding dedicated shifter circuits beneath the sense amplifiers to enable horizontal data movement across adjacent bitlines or vertical data layouts which store operand bits along a bitline to implement shifts as row-copy operations. In this paper, we propose a novel DRAM subarray design that enables in-DRAM bit-shifting for open-bitline architectures. In this new design, we built upon prior work that introduced a new type of cell used for row migration in asymmetric subarrays, called a \"migration cell\". We repurpose and extend the functionality by adding a row of migration cells at the top and bottom of each subarray which enables bidirectional bit-shifting within any given row. This new design maintains compatibility with standard DRAM operations. Unlike previous approaches to shifting, our design operates on horizontally-stored data, eliminating the need and overhead of data transposition, and our design leverages the existing cell structures, eliminating the need for additional complex logic and circuitry. We present an evaluation of our design that includes timing and energy analysis using NVMain, circuit-level validation of the in-DRAM shift operation using LTSPICE, and a VLSI layout implementation in Cadence Virtuoso.",
-    "url": "http://arxiv.org/abs/2602.24269v1",
-    "date": "2026-02-27",
-    "venue": "📦 arXiv 预印本",
-    "is_top": false,
-    "review": "专家解读生成失败（触发频控限制）。"
   }
 ]
