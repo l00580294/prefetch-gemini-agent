@@ -115,14 +115,5 @@
     "venue": "📦 arXiv 预印本",
     "is_top": false,
     "review": "专家解读生成失败（触发频控限制）。"
-  },
-  {
-    "title": "Accelerating OpenPangu Inference on NPU via Speculative Decoding",
-    "summary": "To mitigate the Memory Wall bottleneck encountered by Large Language Models (LLMs) during inference on \\textbf{NPU} hardware, and addressing the scarcity of native support for mainstream speculative decoding algorithms on domestic infrastructure, this study presents an end-to-end speculative inference acceleration scheme for OpenPangu-7B.",
-    "url": "http://arxiv.org/abs/2603.03383v1",
-    "date": "2026-03-03",
-    "venue": "📝 已发表至: arXiv.org",
-    "is_top": false,
-    "review": "专家解读生成失败（触发频控限制）。"
   }
 ]
